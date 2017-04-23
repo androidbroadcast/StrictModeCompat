@@ -41,16 +41,19 @@ public class SampleApplication extends Application {
     public void onCreate() {
         super.onCreate();
         if (BuildConfig.DEVELOPER_MODE) {
-            StrictMode.ThreadPolicy threadPolicy = new StrictModeCompat.ThreadPolicy.Builder()
-                    .detectResourceMismatches()
-                    .detectCustomSlowCalls()
-                    .penaltyLog()
-                    .build();
+            StrictModeCompat.ThreadPolicy threadPolicy = new StrictModeCompat.ThreadPolicy.Builder()
+                        .detectResourceMismatches()
+                        .detectCustomSlowCalls()
+                        .detectUnbufferedIo()  // Available only on Android O+
+                        .penaltyLog()
+                        .build();
 
-            StrictMode.VmPolicy vmPolicy = new StrictModeCompat.VmPolicy.Builder()
+            StrictModeCompat.VmPolicy vmPolicy = new StrictModeCompat.VmPolicy.Builder()
                     .detectFileUriExposure()
                     .detectLeakedRegistrationObjects()
                     .detectCleartextNetwork()
+                    .detectUntaggedSockets() // Available only on Android O+
+                    .detectContentUriWithoutPermission()  // Available only on Android O+
                     .penaltyLog()
                     .build();
 
@@ -64,7 +67,7 @@ Download
 --------
 
 ```groovy
-compile 'com.kirich1409:strict-mode-compat:25.0.0'
+compile 'com.kirich1409:strict-mode-compat:26.0.0-alpha1'
 ```
 
 License
