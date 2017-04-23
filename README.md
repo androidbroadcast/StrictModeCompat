@@ -6,12 +6,12 @@ You must apply version of library for you project base on compileSdkVersion:
 
 ```groovy
 android {
-    compileSdkVersion 25
+    compileSdkVersion 26
     …
 }
 
 dependencies {
-    compile "com.kirich1409:strict-mode-compat:25.0.0"
+    compile "com.kirich1409:strict-mode-compat:26.0.0-alpha1"
 }
 ```
 
@@ -36,18 +36,18 @@ android {
 ###### SampleApplication.java ######
 ```java
 public class SampleApplication extends Application {
-    
+
     @Override
     public void onCreate() {
         super.onCreate();
         if (BuildConfig.DEVELOPER_MODE) {
-            StrictModeCompat.ThreadPolicy threadPolicy = new StrictModeCompat.ThreadPolicy.Builder()
+            StrictMode.ThreadPolicy threadPolicy = new StrictModeCompat.ThreadPolicy.Builder()
                     .detectResourceMismatches()
                     .detectCustomSlowCalls()
                     .penaltyLog()
                     .build();
 
-            StrictModeCompat.VmPolicy vmPolicy = new StrictModeCompat.VmPolicy.Builder()
+            StrictMode.VmPolicy vmPolicy = new StrictModeCompat.VmPolicy.Builder()
                     .detectFileUriExposure()
                     .detectLeakedRegistrationObjects()
                     .detectCleartextNetwork()
