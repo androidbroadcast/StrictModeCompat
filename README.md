@@ -6,12 +6,12 @@ You must apply version of library for you project base on compileSdkVersion:
 
 ```groovy
 android {
-    compileSdkVersion VERSION
+    compileSdkVersion 25
     …
 }
 
 dependencies {
-    compile "com.kirich1409:strict-mode-compat:${VERSION}.X.X"
+    compile "com.kirich1409:strict-mode-compat:25.0.0"
 }
 ```
 
@@ -35,21 +35,28 @@ android {
 
 ###### SampleApplication.java ######
 ```java
-if (BuildConfig.DEVELOPER_MODE) {
-    StrictMode.ThreadPolicy threadPolicy = new StrictModeCompat.ThreadPolicy.Builder()
-            .detectResourceMismatches()
-            .detectCustomSlowCalls()
-            .penaltyLog()
-            .build();
+public class SampleApplication extends Application {
+    
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        if (BuildConfig.DEVELOPER_MODE) {
+            StrictModeCompat.ThreadPolicy threadPolicy = new StrictModeCompat.ThreadPolicy.Builder()
+                    .detectResourceMismatches()
+                    .detectCustomSlowCalls()
+                    .penaltyLog()
+                    .build();
 
-    StrictMode.VmPolicy vmPolicy = new StrictModeCompat.VmPolicy.Builder()
-            .detectFileUriExposure()
-            .detectLeakedRegistrationObjects()
-            .detectCleartextNetwork()
-            .penaltyLog()
-            .build();
+            StrictModeCompat.VmPolicy vmPolicy = new StrictModeCompat.VmPolicy.Builder()
+                    .detectFileUriExposure()
+                    .detectLeakedRegistrationObjects()
+                    .detectCleartextNetwork()
+                    .penaltyLog()
+                    .build();
 
-    StrictModeCompat.setPolicies(threadPolicy, vmPolicy);
+            StrictModeCompat.setPolicies(threadPolicy, vmPolicy);
+        }
+    }
 }
 ```
 
