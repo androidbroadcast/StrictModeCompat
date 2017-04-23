@@ -25,5 +25,5 @@ android {
 
 dependencies {
     compile 'com.android.support:appcompat-v7:25.3.1'
-    compile project(':library')
+    compile 'com.kirich1409:strict-mode-compat:25.0.0'
 }

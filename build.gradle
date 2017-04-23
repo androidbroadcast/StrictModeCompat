@@ -12,12 +12,17 @@ buildscript {
     }
 }
 
+plugins {
+    id "com.jfrog.bintray" version "1.7.3"
+    id "com.github.dcendents.android-maven" version "1.5"
+}
+
+group = 'by.kirich1409'
+version = '25.0.0'
+
 allprojects {
     repositories {
         jcenter()
+        maven{ url 'https://dl.bintray.com/kirich1409/maven/'}
     }
-}
-
-task clean(type: Delete) {
-    delete rootProject.buildDir
 }

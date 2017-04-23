@@ -65,8 +65,8 @@ public class StrictModeCompat {
 
     /**
      * Enable the recommended StrictMode defaults, with violations just being logged.
-     * <p>
-     * <p>This catches disk and network access on the main thread, as
+     * <p/>
+     * <p/>This catches disk and network access on the main thread, as
      * well as leaked SQLite cursors and unclosed resources.  This is
      * simply a wrapper around {@link #setVmPolicy} and {@link
      * #setThreadPolicy}.
@@ -109,8 +109,8 @@ public class StrictModeCompat {
     /**
      * Sets the policy for what actions on the current thread should
      * be detected, as well as the penalty if such actions occur.
-     * <p>
-     * <p>Internally this sets a thread-local variable which is
+     * <p/>
+     * <p/>Internally this sets a thread-local variable which is
      * propagated across cross-process IPC calls, meaning you can
      * catch violations when a system service or another process
      * accesses the disk or network on your behalf.
@@ -133,13 +133,13 @@ public class StrictModeCompat {
     }
 
     /**
-     * Set thread & vm policies in one method.
+     * Set Thread and VM policies in one method.
      *
      * @param threadPolicy the thread policy to put into place
-     * @param vmPolicy the vm policy to put into place
+     * @param vmPolicy     the vm policy to put into place
      */
     public static void setPolicies(StrictMode.ThreadPolicy threadPolicy,
-                                   StrictMode.VmPolicy vmPolicy){
+                                   StrictMode.VmPolicy vmPolicy) {
         setThreadPolicy(threadPolicy);
         setVmPolicy(vmPolicy);
     }
@@ -239,7 +239,7 @@ public class StrictModeCompat {
 
             /**
              * Construct the ThreadPolicy instance.
-             *
+             * <p>
              * <p>Note: if no penalties are enabled before calling
              * <code>build</code>, {@link #penaltyLog} is implicitly
              * set.
@@ -311,7 +311,7 @@ public class StrictModeCompat {
              * Crash the whole process on violation.  This penalty runs at
              * the end of all enabled penalties so you'll still get
              * see logging or other violations before the process dies.
-             *
+             * <p>
              * <p>Unlike {@link #penaltyDeathOnNetwork}, this applies
              * to disk reads, disk writes, and network usage if their
              * corresponding detect flags are set.
@@ -326,7 +326,7 @@ public class StrictModeCompat {
              * {@link #penaltyDeath}, this penalty runs
              * <em>before</em> anything else.  You must still have
              * called {@link #detectNetwork} to enable this.
-             *
+             * <p>
              * <p>In the Honeycomb or later SDKs, this is on by default.
              */
             public Builder penaltyDeathOnNetwork() {
@@ -639,7 +639,7 @@ public class StrictModeCompat {
 
             /**
              * Detect everything that's potentially suspect.
-             *
+             * <p>
              * <p>In the Honeycomb release this includes leaks of
              * SQLite cursors, Activities, and other closable objects
              * but will likely expand in future releases.
@@ -698,7 +698,7 @@ public class StrictModeCompat {
              * Detect when an {@link Closeable} or other
              * object with a explict termination method is finalized
              * without having been closed.
-             *
+             * <p>
              * <p>You always want to explicitly close such objects to
              * avoid unnecessary resources leaks.
              */
@@ -721,7 +721,7 @@ public class StrictModeCompat {
              * Detect when an
              * {@link SQLiteCursor} or other
              * SQLite object is finalized without having been closed.
-             *
+             * <p>
              * <p>You always want to explicitly close your SQLite
              * cursors to avoid unnecessary database contention and
              * temporary memory leaks.
@@ -785,6 +785,9 @@ public class StrictModeCompat {
             /**
              * Set an upper bound on how many instances of a class can be in memory
              * at once.  Helps to prevent object leaks.
+             *
+             * @param klass         Class for what apply instances limit
+             * @param instanceLimit Max instances count
              */
             public Builder setClassInstanceLimit(@NonNull Class<?> klass,
                                                  @IntRange(from = 0) int instanceLimit) {
