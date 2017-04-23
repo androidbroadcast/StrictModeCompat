@@ -30,5 +30,5 @@ android {
 
 dependencies {
     compile 'com.android.support:appcompat-v7:26.0.0-alpha1'
-    compile project(':strict-mode-compat')
+    compile 'com.kirich1409:strcit-mode-compat:26.0.0-alpha1'
 }
