@@ -41,14 +41,14 @@ public class SampleApplication extends Application {
     public void onCreate() {
         super.onCreate();
         if (BuildConfig.DEVELOPER_MODE) {
-            StrictModeCompat.ThreadPolicy threadPolicy = new StrictModeCompat.ThreadPolicy.Builder()
+            StrictMode.ThreadPolicy threadPolicy = new StrictModeCompat.ThreadPolicy.Builder()
                         .detectResourceMismatches()
                         .detectCustomSlowCalls()
                         .detectUnbufferedIo()  // Available only on Android O+
                         .penaltyLog()
                         .build();
 
-            StrictModeCompat.VmPolicy vmPolicy = new StrictModeCompat.VmPolicy.Builder()
+            StrictMode.VmPolicy vmPolicy = new StrictModeCompat.VmPolicy.Builder()
                     .detectFileUriExposure()
                     .detectLeakedRegistrationObjects()
                     .detectCleartextNetwork()
