@@ -1,5 +1,5 @@
 group = 'com.kirich1409'
-version = '26.0.0-alpha1'
+version = rootProject.ext.libraryVersion
 
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
@@ -54,7 +54,7 @@ bintray {
         githubReleaseNotesFile = 'README.md' //Optional Github readme file
 
         version {
-            name = '26.0.0-alpha1'
+            name = rootProject.ext.libraryVersion
             desc = 'Android StrictMode Compat Library for Api Level 26 (Android O)'
             released = new Date()
             gpg {

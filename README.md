@@ -11,7 +11,7 @@ android {
 }
 
 dependencies {
-    compile "com.kirich1409:strict-mode-compat:26.0.0-alpha1"
+    compile "com.kirich1409:strict-mode-compat:26.0.0"
 }
 ```
 
@@ -67,7 +67,7 @@ Download
 --------
 
 ```groovy
-compile 'com.kirich1409:strict-mode-compat:26.0.0-alpha1'
+compile 'com.kirich1409:strict-mode-compat:26.0.0'
 ```
 
 License

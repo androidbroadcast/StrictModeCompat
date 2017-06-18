@@ -1,15 +1,15 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 'android-O'
-    buildToolsVersion '26.0.0-rc1'
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
         applicationId "com.kirillr.application"
         minSdkVersion 14
-        targetSdkVersion 'O'
-        versionCode 1
-        versionName "1.0"
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 260000
+        versionName "26.0.0"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -29,6 +29,6 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:26.0.0-alpha1'
-    compile 'com.kirich1409:strcit-mode-compat:26.0.0-alpha1'
+    compile "com.android.support:appcompat-v7:$androidSupportLibVersion"
+    compile project(':strict-mode-compat')
 }

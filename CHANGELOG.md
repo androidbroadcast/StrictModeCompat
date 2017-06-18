@@ -1,6 +1,10 @@
 Change Log
 ==========
 
+Version 26.0.0 (2017-06-18)
+---------------------------
+Move to final version of Android O API
+
 Version 26.0.0-alpha1 (2017-04-23)
 ----------------------------------
 Add updates of StrictMode in Android 0 Developer Preview 1
