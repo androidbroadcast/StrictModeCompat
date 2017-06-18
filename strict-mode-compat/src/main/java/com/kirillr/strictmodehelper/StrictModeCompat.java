@@ -418,6 +418,14 @@ public class StrictModeCompat {
                 mBuilder.permitResourceMismatches();
                 return this;
             }
+
+            /**
+             * Detect unbuffered input/output operations.
+             */
+            public Builder detectUnbufferedIo() {
+                mBuilder.detectUnbufferedIo();
+                return this;
+            }
         }
 
         private interface BuilderImpl {
@@ -459,6 +467,8 @@ public class StrictModeCompat {
             void permitNetwork();
 
             void permitResourceMismatches();
+
+            void detectUnbufferedIo();
         }
 
         private static class BaseBuilderImpl implements BuilderImpl {
@@ -553,6 +563,10 @@ public class StrictModeCompat {
             @Override
             public void permitResourceMismatches() {
             }
+
+            @Override
+            public void detectUnbufferedIo() {
+            }
         }
 
         @TargetApi(Build.VERSION_CODES.HONEYCOMB)
@@ -590,6 +604,15 @@ public class StrictModeCompat {
             @Override
             public void permitResourceMismatches() {
                 builder.permitResourceMismatches();
+            }
+        }
+
+        @TargetApi(Build.VERSION_CODES.O)
+        private static class V26BuilderImpl extends V11BuilderImpl {
+
+            @Override
+            public void detectUnbufferedIo() {
+                builder.detectUnbufferedIo();
             }
         }
     }
@@ -794,6 +817,30 @@ public class StrictModeCompat {
                 mBuilder.setClassInstanceLimit(klass, instanceLimit);
                 return this;
             }
+
+            /**
+             * Detect when the calling application sends a content:// Uri to another app
+             * without setting {@link Intent#FLAG_GRANT_READ_URI_PERMISSION} or
+             * {@link Intent#FLAG_GRANT_WRITE_URI_PERMISSION}.<p/>
+             * Forgetting to include one or more of these flags
+             * when sending an intent is typically an app bug.
+             */
+            public Builder detectContentUriWithoutPermission() {
+                mBuilder.detectContentUriWithoutPermission();
+                return this;
+            }
+
+            /**
+             * Detect any sockets in the calling app which have not been tagged
+             * using {@link android.net.TrafficStats}.
+             * Tagging sockets can help you investigate network usage inside your app,
+             * such as a narrowing down heavy usage to a specific library or component.
+             * <p/>This currently does not detect sockets created in native code.
+             */
+            public Builder detectUntaggedSockets() {
+                mBuilder.detectUntaggedSockets();
+                return this;
+            }
         }
 
         private interface BuilderImpl {
@@ -826,6 +873,10 @@ public class StrictModeCompat {
 
             void setClassInstanceLimit(@NonNull Class<?> klass,
                                        @IntRange(from = 0) int instanceLimit);
+
+            void detectContentUriWithoutPermission();
+
+            void detectUntaggedSockets();
         }
 
         private static class BaseBuilderImpl implements BuilderImpl {
@@ -894,6 +945,14 @@ public class StrictModeCompat {
             public void setClassInstanceLimit(@NonNull Class<?> klass,
                                               @IntRange(from = 0) int instanceLimit) {
             }
+
+            @Override
+            public void detectContentUriWithoutPermission() {
+            }
+
+            @Override
+            public void detectUntaggedSockets() {
+            }
         }
 
         @TargetApi(Build.VERSION_CODES.HONEYCOMB)
@@ -954,6 +1013,20 @@ public class StrictModeCompat {
             @Override
             public void penaltyDeathOnFileUriExposure() {
                 builder.penaltyDeathOnFileUriExposure();
+            }
+        }
+
+        @TargetApi(Build.VERSION_CODES.O)
+        private static class V26BuilderImpl extends V23BuilderImpl {
+
+            @Override
+            public void detectUntaggedSockets() {
+                builder.detectUntaggedSockets();
+            }
+
+            @Override
+            public void detectContentUriWithoutPermission() {
+                builder.detectContentUriWithoutPermission();
             }
         }
     }

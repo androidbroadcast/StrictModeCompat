@@ -14,6 +14,7 @@ public class SampleApplication extends Application {
             StrictMode.ThreadPolicy threadPolicy = new StrictModeCompat.ThreadPolicy.Builder()
                     .detectResourceMismatches()
                     .detectCustomSlowCalls()
+                    .detectUnbufferedIo()
                     .penaltyLog()
                     .build();
 
@@ -21,6 +22,8 @@ public class SampleApplication extends Application {
                     .detectFileUriExposure()
                     .detectLeakedRegistrationObjects()
                     .detectCleartextNetwork()
+                    .detectUntaggedSockets()
+                    .detectContentUriWithoutPermission()
                     .penaltyLog()
                     .build();
 
