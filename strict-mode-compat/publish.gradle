@@ -55,7 +55,7 @@ bintray {
 
         version {
             name = rootProject.ext.libraryVersion
-            desc = 'Android StrictMode Compat Library for Api Level 26 (Android O)'
+            desc = 'Android StrictMode Compat Library'
             released = new Date()
             gpg {
                 sign = true

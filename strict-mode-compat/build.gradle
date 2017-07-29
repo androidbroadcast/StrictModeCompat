@@ -8,7 +8,7 @@ android {
         minSdkVersion 9
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 260002
-        versionName "26.0.1"
+        versionName rootProject.ext.libraryVersion
     }
 
     buildTypes {

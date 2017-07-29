@@ -1,6 +1,10 @@
 Change Log
 ==========
 
+Version 26.0.1 (2017-07-29)
+---------------------------
+Update ot Android Support Library 26.0.0
+
 Version 26.0.0 (2017-06-18)
 ---------------------------
 Move to final version of Android O API

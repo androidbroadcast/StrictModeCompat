@@ -8,8 +8,8 @@ android {
         applicationId "com.kirillr.application"
         minSdkVersion 14
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 260000
-        versionName "26.0.0"
+        versionCode 260002
+        versionName "26.0.1"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 

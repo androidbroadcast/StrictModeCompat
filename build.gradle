@@ -19,11 +19,11 @@ plugins {
 
 ext {
     androidSupportLib = '26.0.0'
-    libraryVersion = '26.0.0'
+    libraryVersion = '26.0.1'
 
     compileSdkVersion = 26
     targetSdkVersion = 26
-    buildToolsVersion = '26.0.0'
+    buildToolsVersion = '26.0.1'
 }
 
 group = 'by.kirich1409'
