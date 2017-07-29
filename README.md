@@ -11,7 +11,7 @@ android {
 }
 
 dependencies {
-    compile "com.kirich1409:strict-mode-compat:26.0.0"
+    compile "com.kirich1409:strict-mode-compat:26.0.2"
 }
 ```
 
@@ -44,7 +44,7 @@ public class SampleApplication extends Application {
             StrictMode.ThreadPolicy threadPolicy = new StrictModeCompat.ThreadPolicy.Builder()
                         .detectResourceMismatches()
                         .detectCustomSlowCalls()
-                        .detectUnbufferedIo()  // Available only on Android O+
+                        .detectUnbufferedIo()  // Available only on Android 8.0+
                         .penaltyLog()
                         .build();
 
@@ -52,8 +52,8 @@ public class SampleApplication extends Application {
                     .detectFileUriExposure()
                     .detectLeakedRegistrationObjects()
                     .detectCleartextNetwork()
-                    .detectUntaggedSockets() // Available only on Android O+
-                    .detectContentUriWithoutPermission()  // Available only on Android O+
+                    .detectUntaggedSockets() // Available only on Android 8.0+
+                    .detectContentUriWithoutPermission()  // Available only on Android 8.0+
                     .penaltyLog()
                     .build();
 
@@ -67,8 +67,19 @@ Download
 --------
 
 ```groovy
-compile 'com.kirich1409:strict-mode-compat:26.0.0'
+compile 'com.kirich1409:strict-mode-compat:26.0.2'
 ```
+
+Kotlin Extensions
+-----------------
+
+For project that using Kotlin you can add
+
+```groovy
+compile 'com.kirich1409:strict-mode-compat-kotlin:26.0.2'
+```
+
+instead of dependency described in [Download](#Download)
 
 License
 -------
