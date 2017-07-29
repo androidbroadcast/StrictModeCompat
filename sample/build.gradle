@@ -29,6 +29,6 @@ android {
 }
 
 dependencies {
-    compile "com.android.support:appcompat-v7:$androidSupportLibVersion"
+    compile "com.android.support:appcompat-v7:$androidSupportLib"
     compile project(':strict-mode-compat')
 }
