@@ -17,6 +17,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.io.Closeable;
+import java.util.Locale;
 
 public class StrictModeCompat {
 
@@ -99,11 +100,48 @@ public class StrictModeCompat {
      * {@link android.os.StrictMode.ThreadPolicy.Builder#detectCustomSlowCalls}
      * enabled.
      *
-     * @param name a short string for the exception stack trace that's
+     * @param name Short string for the exception stack trace that's
      *             built if when this fires.
+     * @see StrictModeCompat#noteSlowCall(String, Object...)
+     * @see StrictModeCompat#noteSlowCall(Locale, String, Object...)
      */
     public static void noteSlowCall(@NonNull String name) {
         STRICT_MODE_IMPL.noteSlowCall(name);
+    }
+
+    /**
+     * For code to note that it's slow.  This is a no-op unless the
+     * current thread's {@link android.os.StrictMode.ThreadPolicy} has
+     * {@link android.os.StrictMode.ThreadPolicy.Builder#detectCustomSlowCalls}
+     * enabled.
+     *
+     * @param message Short formatting string for the exception stack trace that's
+     *                built if when this fires.
+     * @param args Arguments referenced by the format specifiers in the format string
+     *
+     * @see StrictModeCompat#noteSlowCall(String)
+     * @see StrictModeCompat#noteSlowCall(Locale, String, Object...)
+     */
+    public static void noteSlowCall(@NonNull String message, Object... args) {
+        STRICT_MODE_IMPL.noteSlowCall(String.format(message, args));
+    }
+
+    /**
+     * For code to note that it's slow.  This is a no-op unless the
+     * current thread's {@link android.os.StrictMode.ThreadPolicy} has
+     * {@link android.os.StrictMode.ThreadPolicy.Builder#detectCustomSlowCalls}
+     * enabled.
+     *
+     * @param locale The locale to apply during formatting
+     * @param message Short formatting string for the exception stack trace that's
+     *                built if when this fires.
+     * @param args Arguments referenced by the format specifiers in the format string
+     *
+     * @see StrictModeCompat#noteSlowCall(String)
+     * @see StrictModeCompat#noteSlowCall(String, Object...)
+     */
+    public static void noteSlowCall(@Nullable Locale locale, @NonNull String message, Object... args) {
+        STRICT_MODE_IMPL.noteSlowCall(String.format(locale, message, args));
     }
 
     /**

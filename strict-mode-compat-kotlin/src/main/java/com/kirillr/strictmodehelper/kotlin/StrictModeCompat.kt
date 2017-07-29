@@ -1,6 +1,5 @@
 package com.kirillr.strictmodehelper.kotlin
 
-
 /**
  * @authror Kirill Rozov
  * @date 29/7/17.
@@ -8,7 +7,7 @@ package com.kirillr.strictmodehelper.kotlin
 object StrictModeCompat {
 
     @JvmStatic
-    fun noteSlowCall(lazeMessage: () -> String) {
-        com.kirillr.strictmodehelper.StrictModeCompat.noteSlowCall(lazeMessage())
+    fun noteSlowCall(lazyMessage: () -> String) {
+        com.kirillr.strictmodehelper.StrictModeCompat.noteSlowCall(lazyMessage())
     }
 }

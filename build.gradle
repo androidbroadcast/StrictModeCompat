@@ -19,7 +19,7 @@ plugins {
 
 ext {
     androidSupportLib = '26.0.0'
-    libraryVersion = '26.0.1'
+    libraryVersion = '26.0.2'
 
     compileSdkVersion = 26
     targetSdkVersion = 26
