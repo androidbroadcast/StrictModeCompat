@@ -1,1 +1,1 @@
-include ':strict-mode-compat', ':sample'
+include ':strict-mode-compat', ':sample', ':strict-mode-compat-kotlin'
