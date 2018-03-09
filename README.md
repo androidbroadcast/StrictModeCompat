@@ -1,3 +1,5 @@
+[![Download](https://api.bintray.com/packages/kirich1409/maven/strict-mode-compat/images/download.svg)](https://bintray.com/kirich1409/maven/strict-mode-compat/_latestVersion)
+
 Android StrictMode Compat
 =========================
 
