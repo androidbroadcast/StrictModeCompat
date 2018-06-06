@@ -6,9 +6,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
-        minSdkVersion 9
+        minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 260002
+        versionCode rootProject.ext.versionCode
         versionName rootProject.ext.libraryVersion
     }
 }
@@ -16,6 +16,6 @@ android {
 apply from: 'publish.gradle'
 
 dependencies {
-    compile "com.kirich1409:strict-mode-compat:$libraryVersion"
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    api project(":strict-mode-compat")
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }

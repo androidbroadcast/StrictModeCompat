@@ -12,24 +12,16 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.DropBoxManager;
 import android.os.StrictMode;
+import android.os.strictmode.Violation;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.io.Closeable;
 import java.util.Locale;
+import java.util.concurrent.Executor;
 
 public class StrictModeCompat {
-
-    private static final StrictModeImpl STRICT_MODE_IMPL;
-
-    static {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            STRICT_MODE_IMPL = new StrictModeImplV11();
-        } else {
-            STRICT_MODE_IMPL = new StrictModeImplBase();
-        }
-    }
 
     private StrictModeCompat() {
     }
@@ -46,7 +38,7 @@ public class StrictModeCompat {
      */
     @NonNull
     public static StrictMode.ThreadPolicy allowThreadDiskReads() {
-        return STRICT_MODE_IMPL.allowThreadDiskReads();
+        return StrictMode.allowThreadDiskReads();
     }
 
     /**
@@ -61,7 +53,7 @@ public class StrictModeCompat {
      */
     @NonNull
     public static StrictMode.ThreadPolicy allowThreadDiskWrites() {
-        return STRICT_MODE_IMPL.allowThreadDiskWrites();
+        return StrictMode.allowThreadDiskWrites();
     }
 
     /**
@@ -73,7 +65,7 @@ public class StrictModeCompat {
      * #setThreadPolicy}.
      */
     public static void enableDefaults() {
-        STRICT_MODE_IMPL.enableDefaults();
+        StrictMode.enableDefaults();
     }
 
     /**
@@ -83,7 +75,7 @@ public class StrictModeCompat {
      */
     @Nullable
     public static StrictMode.ThreadPolicy getThreadPolicy() {
-        return STRICT_MODE_IMPL.getThreadPolicy();
+        return StrictMode.getThreadPolicy();
     }
 
     /**
@@ -91,7 +83,7 @@ public class StrictModeCompat {
      */
     @Nullable
     public static StrictMode.VmPolicy getVmPolicy() {
-        return STRICT_MODE_IMPL.getVmPolicy();
+        return StrictMode.getVmPolicy();
     }
 
     /**
@@ -106,7 +98,7 @@ public class StrictModeCompat {
      * @see StrictModeCompat#noteSlowCall(Locale, String, Object...)
      */
     public static void noteSlowCall(@NonNull String name) {
-        STRICT_MODE_IMPL.noteSlowCall(name);
+        StrictMode.noteSlowCall(name);
     }
 
     /**
@@ -117,13 +109,12 @@ public class StrictModeCompat {
      *
      * @param message Short formatting string for the exception stack trace that's
      *                built if when this fires.
-     * @param args Arguments referenced by the format specifiers in the format string
-     *
+     * @param args    Arguments referenced by the format specifiers in the format string
      * @see StrictModeCompat#noteSlowCall(String)
      * @see StrictModeCompat#noteSlowCall(Locale, String, Object...)
      */
     public static void noteSlowCall(@NonNull String message, Object... args) {
-        STRICT_MODE_IMPL.noteSlowCall(String.format(message, args));
+        StrictMode.noteSlowCall(String.format(message, args));
     }
 
     /**
@@ -132,16 +123,15 @@ public class StrictModeCompat {
      * {@link android.os.StrictMode.ThreadPolicy.Builder#detectCustomSlowCalls}
      * enabled.
      *
-     * @param locale The locale to apply during formatting
+     * @param locale  The locale to apply during formatting
      * @param message Short formatting string for the exception stack trace that's
      *                built if when this fires.
-     * @param args Arguments referenced by the format specifiers in the format string
-     *
+     * @param args    Arguments referenced by the format specifiers in the format string
      * @see StrictModeCompat#noteSlowCall(String)
      * @see StrictModeCompat#noteSlowCall(String, Object...)
      */
     public static void noteSlowCall(@Nullable Locale locale, @NonNull String message, Object... args) {
-        STRICT_MODE_IMPL.noteSlowCall(String.format(locale, message, args));
+        StrictMode.noteSlowCall(String.format(locale, message, args));
     }
 
     /**
@@ -156,7 +146,7 @@ public class StrictModeCompat {
      * @param policy the policy to put into place
      */
     public static void setThreadPolicy(StrictMode.ThreadPolicy policy) {
-        STRICT_MODE_IMPL.setThreadPolicy(policy);
+        StrictMode.setThreadPolicy(policy);
     }
 
     /**
@@ -167,7 +157,7 @@ public class StrictModeCompat {
      * @param policy the policy to put into place
      */
     public static void setVmPolicy(StrictMode.VmPolicy policy) {
-        STRICT_MODE_IMPL.setVmPolicy(policy);
+        StrictMode.setVmPolicy(policy);
     }
 
     /**
@@ -182,96 +172,37 @@ public class StrictModeCompat {
         setVmPolicy(vmPolicy);
     }
 
-    private interface StrictModeImpl {
-
-        StrictMode.ThreadPolicy allowThreadDiskReads();
-
-        StrictMode.ThreadPolicy allowThreadDiskWrites();
-
-        void enableDefaults();
-
-        @Nullable
-        StrictMode.ThreadPolicy getThreadPolicy();
-
-        @Nullable
-        StrictMode.VmPolicy getVmPolicy();
-
-        void noteSlowCall(@NonNull String name);
-
-        void setThreadPolicy(StrictMode.ThreadPolicy policy);
-
-        void setVmPolicy(android.os.StrictMode.VmPolicy policy);
-    }
-
-    private static class StrictModeImplBase implements StrictModeImpl {
-
-        @Override
-        public StrictMode.ThreadPolicy allowThreadDiskReads() {
-            return StrictMode.allowThreadDiskReads();
-        }
-
-        @Override
-        public StrictMode.ThreadPolicy allowThreadDiskWrites() {
-            return StrictMode.allowThreadDiskWrites();
-        }
-
-        @Override
-        public void enableDefaults() {
-            StrictMode.enableDefaults();
-        }
-
-        @Override
-        public StrictMode.ThreadPolicy getThreadPolicy() {
-            return StrictMode.getThreadPolicy();
-        }
-
-        @Override
-        public StrictMode.VmPolicy getVmPolicy() {
-            return StrictMode.getVmPolicy();
-        }
-
-        @Override
-        public void noteSlowCall(@NonNull String name) {
-        }
-
-        @Override
-        public void setThreadPolicy(StrictMode.ThreadPolicy policy) {
-            StrictMode.setThreadPolicy(policy);
-        }
-
-        @Override
-        public void setVmPolicy(StrictMode.VmPolicy policy) {
-            StrictMode.setVmPolicy(policy);
-        }
-    }
-
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    private static class StrictModeImplV11 extends StrictModeImplBase {
-
-        @Override
-        public void noteSlowCall(@NonNull String name) {
-            StrictMode.noteSlowCall(name);
-        }
-    }
-
     public static class ThreadPolicy {
 
         private ThreadPolicy() {
         }
 
-        public final static class Builder {
+        public static final class Builder {
 
+            @NonNull
             private final ThreadPolicy.BuilderImpl mBuilder;
 
-            {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            public Builder() {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    mBuilder = new V28BuilderImpl();
+                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    mBuilder = new V26BuilderImpl();
+                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     mBuilder = new V23BuilderImpl();
-
-                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                    mBuilder = new V11BuilderImpl();
-
                 } else {
                     mBuilder = new BaseBuilderImpl();
+                }
+            }
+
+            public Builder(@NonNull StrictMode.ThreadPolicy policy) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    mBuilder = new V28BuilderImpl(policy);
+                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    mBuilder = new V26BuilderImpl(policy);
+                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    mBuilder = new V23BuilderImpl(policy);
+                } else {
+                    mBuilder = new BaseBuilderImpl(policy);
                 }
             }
 
@@ -459,9 +390,38 @@ public class StrictModeCompat {
 
             /**
              * Detect unbuffered input/output operations.
+             * <p>
+             * Work on {@link Build.VERSION_CODES#O} and newer.
              */
             public Builder detectUnbufferedIo() {
                 mBuilder.detectUnbufferedIo();
+                return this;
+            }
+
+            /**
+             * Disable detection of unbuffered input/output operations.
+             * <p>
+             * Work on {@link Build.VERSION_CODES#O} and newer.
+             */
+            public Builder permitUnbufferedIo() {
+                mBuilder.permitUnbufferedIo();
+                return this;
+            }
+
+            /**
+             * Call {@link StrictMode.OnThreadViolationListener#onThreadViolation(Violation)}
+             * on specified executor every violation.
+             * <p>
+             * Work on {@link Build.VERSION_CODES#P} and newer.
+             *
+             * @param executor This value must never be null.
+             * @param listener This value must never be null.
+             */
+            public Builder penaltyListener(
+                    @NonNull Executor executor,
+                    @NonNull OnThreadViolationListener listener
+            ) {
+                mBuilder.penaltyListener(executor, listener);
                 return this;
             }
         }
@@ -470,145 +430,85 @@ public class StrictModeCompat {
 
             StrictMode.ThreadPolicy build();
 
-            void detectAll();
+            default void detectAll() {
+            }
 
-            void detectCustomSlowCalls();
+            default void detectCustomSlowCalls() {
+            }
 
-            void detectDiskReads();
+            default void detectDiskReads() {
+            }
 
-            void detectDiskWrites();
+            default void detectDiskWrites() {
+            }
 
-            void detectNetwork();
+            default void detectNetwork() {
+            }
 
-            void detectResourceMismatches();
+            default void detectResourceMismatches() {
+            }
 
-            void penaltyDeath();
+            default void penaltyDeath() {
+            }
 
-            void penaltyDeathOnNetwork();
+            default void penaltyDeathOnNetwork() {
+            }
 
-            void penaltyDialog();
+            default void penaltyDialog() {
+            }
 
-            void penaltyDropBox();
+            default void penaltyDropBox() {
+            }
 
-            void penaltyFlashScreen();
+            default void penaltyFlashScreen() {
+            }
 
-            void penaltyLog();
+            default void penaltyLog() {
+            }
 
-            void permitAll();
+            default void permitAll() {
+            }
 
-            void permitCustomSlowCalls();
+            default void permitCustomSlowCalls() {
+            }
 
-            void permitDiskReads();
+            default void permitDiskReads() {
+            }
 
-            void permitDiskWrites();
+            default void permitDiskWrites() {
+            }
 
-            void permitNetwork();
+            default void permitNetwork() {
+            }
 
-            void permitResourceMismatches();
+            default void permitResourceMismatches() {
+            }
 
-            void detectUnbufferedIo();
+            default void detectUnbufferedIo() {
+            }
+
+            default void permitUnbufferedIo() {
+            }
+
+            default void penaltyListener(
+                    @NonNull Executor executor,
+                    @NonNull OnThreadViolationListener listener
+            ) {
+            }
         }
 
         private static class BaseBuilderImpl implements BuilderImpl {
 
-            final StrictMode.ThreadPolicy.Builder builder = new StrictMode.ThreadPolicy.Builder();
+            @NonNull
+            final StrictMode.ThreadPolicy.Builder builder;
 
-            @Override
-            public StrictMode.ThreadPolicy build() {
-                return builder.build();
+            BaseBuilderImpl() {
+                this.builder = new StrictMode.ThreadPolicy.Builder();
             }
 
-            @Override
-            public void detectAll() {
-                builder.detectAll();
+            BaseBuilderImpl(@NonNull StrictMode.ThreadPolicy policy) {
+                this.builder = new StrictMode.ThreadPolicy.Builder(policy);
             }
-
-            @Override
-            public void detectCustomSlowCalls() {
-            }
-
-            @Override
-            public void detectDiskReads() {
-                builder.detectDiskReads();
-            }
-
-            @Override
-            public void detectDiskWrites() {
-                builder.detectDiskWrites();
-            }
-
-            @Override
-            public void detectNetwork() {
-                builder.detectNetwork();
-            }
-
-            @Override
-            public void detectResourceMismatches() {
-            }
-
-            @Override
-            public void penaltyDeath() {
-                builder.penaltyDeath();
-            }
-
-            @Override
-            public void penaltyDeathOnNetwork() {
-            }
-
-            @Override
-            public void penaltyDialog() {
-                builder.penaltyDialog();
-            }
-
-            @Override
-            public void penaltyDropBox() {
-                builder.penaltyDropBox();
-            }
-
-            @Override
-            public void penaltyFlashScreen() {
-            }
-
-            @Override
-            public void penaltyLog() {
-                builder.penaltyLog();
-            }
-
-            @Override
-            public void permitAll() {
-                builder.permitAll();
-            }
-
-            @Override
-            public void permitCustomSlowCalls() {
-            }
-
-            @Override
-            public void permitDiskReads() {
-                builder.permitDiskReads();
-            }
-
-            @Override
-            public void permitDiskWrites() {
-                builder.permitDiskWrites();
-            }
-
-            @Override
-            public void permitNetwork() {
-                builder.permitNetwork();
-            }
-
-            @Override
-            public void permitResourceMismatches() {
-            }
-
-            @Override
-            public void detectUnbufferedIo() {
-            }
-        }
-
-        @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-        private static class V11BuilderImpl extends BaseBuilderImpl {
 
             @Override
             public void detectCustomSlowCalls() {
@@ -629,10 +529,82 @@ public class StrictModeCompat {
             public void permitCustomSlowCalls() {
                 builder.permitCustomSlowCalls();
             }
+
+            @Override
+            public StrictMode.ThreadPolicy build() {
+                return builder.build();
+            }
+
+            @Override
+            public void detectAll() {
+                builder.detectAll();
+            }
+
+            @Override
+            public void detectDiskReads() {
+                builder.detectDiskReads();
+            }
+
+            @Override
+            public void detectDiskWrites() {
+                builder.detectDiskWrites();
+            }
+
+            @Override
+            public void detectNetwork() {
+                builder.detectNetwork();
+            }
+
+            @Override
+            public void penaltyDeath() {
+                builder.penaltyDeath();
+            }
+
+            @Override
+            public void penaltyDialog() {
+                builder.penaltyDialog();
+            }
+
+            @Override
+            public void penaltyDropBox() {
+                builder.penaltyDropBox();
+            }
+
+            @Override
+            public void penaltyLog() {
+                builder.penaltyLog();
+            }
+
+            @Override
+            public void permitAll() {
+                builder.permitAll();
+            }
+
+            @Override
+            public void permitDiskReads() {
+                builder.permitDiskReads();
+            }
+
+            @Override
+            public void permitDiskWrites() {
+                builder.permitDiskWrites();
+            }
+
+            @Override
+            public void permitNetwork() {
+                builder.permitNetwork();
+            }
         }
 
         @TargetApi(Build.VERSION_CODES.M)
-        private static class V23BuilderImpl extends V11BuilderImpl {
+        private static class V23BuilderImpl extends BaseBuilderImpl {
+
+            V23BuilderImpl() {
+            }
+
+            V23BuilderImpl(@NonNull StrictMode.ThreadPolicy policy) {
+                super(policy);
+            }
 
             @Override
             public void detectResourceMismatches() {
@@ -646,11 +618,44 @@ public class StrictModeCompat {
         }
 
         @TargetApi(Build.VERSION_CODES.O)
-        private static class V26BuilderImpl extends V11BuilderImpl {
+        private static class V26BuilderImpl extends V23BuilderImpl {
+
+            V26BuilderImpl() {
+            }
+
+            V26BuilderImpl(@NonNull StrictMode.ThreadPolicy policy) {
+                super(policy);
+            }
 
             @Override
             public void detectUnbufferedIo() {
                 builder.detectUnbufferedIo();
+            }
+
+            @Override
+            public void permitUnbufferedIo() {
+                builder.permitUnbufferedIo();
+            }
+        }
+
+        @TargetApi(Build.VERSION_CODES.P)
+        private static class V28BuilderImpl extends V26BuilderImpl {
+
+            V28BuilderImpl() {
+            }
+
+            V28BuilderImpl(@NonNull StrictMode.ThreadPolicy policy) {
+                super(policy);
+            }
+
+            @Override
+            public void penaltyListener(
+                    @NonNull Executor executor,
+                    @NonNull final OnThreadViolationListener listener
+            ) {
+                builder.penaltyListener(executor,
+                        violation -> listener.onThreadViolation(new ViolationCompat(violation))
+                );
             }
         }
     }
@@ -665,24 +670,39 @@ public class StrictModeCompat {
             @NonNull
             private final BuilderImpl mBuilder;
 
-            {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            public Builder() {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    mBuilder = new V28BuilderImpl();
+                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    mBuilder = new V26BuilderImpl();
+                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     mBuilder = new V24BuilderImpl();
-
                 } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     mBuilder = new V23BuilderImpl();
-
                 } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
                     mBuilder = new V18BuilderImpl();
-
                 } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                     mBuilder = new V16BuilderImpl();
-
-                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                    mBuilder = new V11BuilderImpl();
-
                 } else {
                     mBuilder = new BaseBuilderImpl();
+                }
+            }
+
+            public Builder(@NonNull StrictMode.VmPolicy policy) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    mBuilder = new V28BuilderImpl(policy);
+                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    mBuilder = new V26BuilderImpl(policy);
+                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    mBuilder = new V24BuilderImpl(policy);
+                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    mBuilder = new V23BuilderImpl(policy);
+                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                    mBuilder = new V18BuilderImpl(policy);
+                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    mBuilder = new V16BuilderImpl(policy);
+                } else {
+                    mBuilder = new BaseBuilderImpl(policy);
                 }
             }
 
@@ -750,6 +770,7 @@ public class StrictModeCompat {
              * @see android.support.v4.content.FileProvider
              * @see Intent#FLAG_GRANT_READ_URI_PERMISSION
              */
+            @SuppressWarnings("JavadocReference")
             public Builder detectFileUriExposure() {
                 mBuilder.detectFileUriExposure();
                 return this;
@@ -879,47 +900,116 @@ public class StrictModeCompat {
                 mBuilder.detectUntaggedSockets();
                 return this;
             }
+
+
+            /**
+             * Detect reflective usage of APIs that are not part of the public Android SDK.
+             * <p/>
+             * Note that any non-SDK APIs that this processes accesses before this detection is enabled may not be detected.
+             * To ensure that all such API accesses are detected, you should apply this policy as early as possible after process creation.
+             */
+            public Builder detectNonSdkApiUsage() {
+                mBuilder.detectNonSdkApiUsage();
+                return this;
+            }
+
+            /**
+             * Call {@link StrictMode.OnVmViolationListener#onVmViolation(Violation)} on every violation.
+             *
+             * @param executor This value must never be null.
+             * @param listener This value must never be null.
+             */
+            public Builder penaltyListener(@NonNull Executor executor,
+                                           @NonNull OnVmViolationListener listener) {
+                mBuilder.penaltyListener(executor, listener);
+                return this;
+            }
+
+            /**
+             * Permit reflective usage of APIs that are not part of the public Android SDK.
+             * <p/>
+             * Note that this only affects StrictMode, the underlying runtime may continue
+             * to restrict or warn on access to methods that are not part of the public SDK.
+             */
+            public Builder permitNonSdkApiUsage() {
+                mBuilder.permitNonSdkApiUsage();
+                return this;
+            }
         }
 
         private interface BuilderImpl {
 
             StrictMode.VmPolicy build();
 
-            void detectActivityLeaks();
+            default void detectActivityLeaks() {
+            }
 
-            void detectAll();
+            default void detectAll() {
+            }
 
-            void detectCleartextNetwork();
+            default void detectCleartextNetwork() {
+            }
 
-            void detectFileUriExposure();
+            default void detectFileUriExposure() {
+            }
 
-            void detectLeakedClosableObjects();
+            default void detectLeakedClosableObjects() {
+            }
 
-            void detectLeakedRegistrationObjects();
+            default void detectLeakedRegistrationObjects() {
+            }
 
-            void detectLeakedSqlLiteObjects();
+            default void detectLeakedSqlLiteObjects() {
+            }
 
-            void penaltyDeath();
+            default void penaltyDeath() {
+            }
 
-            void penaltyDeathOnCleartextNetwork();
+            default void penaltyDeathOnCleartextNetwork() {
+            }
 
-            void penaltyDeathOnFileUriExposure();
+            default void penaltyDeathOnFileUriExposure() {
+            }
 
-            void penaltyDropBox();
+            default void penaltyDropBox() {
+            }
 
-            void penaltyLog();
+            default void penaltyLog() {
+            }
 
-            void setClassInstanceLimit(@NonNull Class<?> klass,
-                                       @IntRange(from = 0) int instanceLimit);
+            default void setClassInstanceLimit(@NonNull Class<?> klass,
+                                               @IntRange(from = 0) int instanceLimit) {
+            }
 
-            void detectContentUriWithoutPermission();
+            default void detectContentUriWithoutPermission() {
+            }
 
-            void detectUntaggedSockets();
+            default void detectUntaggedSockets() {
+            }
+
+            default void detectNonSdkApiUsage() {
+            }
+
+            default void penaltyListener(@NonNull Executor executor,
+                                         @NonNull OnVmViolationListener listener) {
+            }
+
+            default void permitNonSdkApiUsage() {
+            }
         }
 
         private static class BaseBuilderImpl implements BuilderImpl {
 
-            final StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+            @NonNull
+            final StrictMode.VmPolicy.Builder builder;
+
+            BaseBuilderImpl() {
+                builder = new StrictMode.VmPolicy.Builder();
+            }
+
+            BaseBuilderImpl(@NonNull StrictMode.VmPolicy policy) {
+                this.builder = new StrictMode.VmPolicy.Builder(policy);
+            }
 
             @Override
             public StrictMode.VmPolicy build() {
@@ -927,28 +1017,8 @@ public class StrictModeCompat {
             }
 
             @Override
-            public void detectActivityLeaks() {
-            }
-
-            @Override
             public void detectAll() {
                 builder.detectAll();
-            }
-
-            @Override
-            public void detectCleartextNetwork() {
-            }
-
-            @Override
-            public void detectFileUriExposure() {
-            }
-
-            @Override
-            public void detectLeakedClosableObjects() {
-            }
-
-            @Override
-            public void detectLeakedRegistrationObjects() {
             }
 
             @Override
@@ -962,14 +1032,6 @@ public class StrictModeCompat {
             }
 
             @Override
-            public void penaltyDeathOnCleartextNetwork() {
-            }
-
-            @Override
-            public void penaltyDeathOnFileUriExposure() {
-            }
-
-            @Override
             public void penaltyDropBox() {
                 builder.penaltyDropBox();
             }
@@ -978,23 +1040,6 @@ public class StrictModeCompat {
             public void penaltyLog() {
                 builder.penaltyLog();
             }
-
-            @Override
-            public void setClassInstanceLimit(@NonNull Class<?> klass,
-                                              @IntRange(from = 0) int instanceLimit) {
-            }
-
-            @Override
-            public void detectContentUriWithoutPermission() {
-            }
-
-            @Override
-            public void detectUntaggedSockets() {
-            }
-        }
-
-        @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-        private static class V11BuilderImpl extends BaseBuilderImpl {
 
             @Override
             public void detectActivityLeaks() {
@@ -1014,7 +1059,14 @@ public class StrictModeCompat {
         }
 
         @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-        private static class V16BuilderImpl extends V11BuilderImpl {
+        private static class V16BuilderImpl extends BaseBuilderImpl {
+
+            V16BuilderImpl() {
+            }
+
+            V16BuilderImpl(@NonNull StrictMode.VmPolicy policy) {
+                super(policy);
+            }
 
             @Override
             public void detectLeakedRegistrationObjects() {
@@ -1025,6 +1077,13 @@ public class StrictModeCompat {
         @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
         private static class V18BuilderImpl extends V16BuilderImpl {
 
+            V18BuilderImpl() {
+            }
+
+            V18BuilderImpl(@NonNull StrictMode.VmPolicy policy) {
+                super(policy);
+            }
+
             @Override
             public void detectFileUriExposure() {
                 builder.detectFileUriExposure();
@@ -1033,6 +1092,13 @@ public class StrictModeCompat {
 
         @TargetApi(Build.VERSION_CODES.M)
         private static class V23BuilderImpl extends V18BuilderImpl {
+
+            V23BuilderImpl() {
+            }
+
+            V23BuilderImpl(@NonNull StrictMode.VmPolicy policy) {
+                super(policy);
+            }
 
             @Override
             public void detectCleartextNetwork() {
@@ -1048,6 +1114,13 @@ public class StrictModeCompat {
         @TargetApi(Build.VERSION_CODES.N)
         private static class V24BuilderImpl extends V23BuilderImpl {
 
+            V24BuilderImpl() {
+            }
+
+            V24BuilderImpl(@NonNull StrictMode.VmPolicy policy) {
+                super(policy);
+            }
+
             @Override
             public void penaltyDeathOnFileUriExposure() {
                 builder.penaltyDeathOnFileUriExposure();
@@ -1055,7 +1128,14 @@ public class StrictModeCompat {
         }
 
         @TargetApi(Build.VERSION_CODES.O)
-        private static class V26BuilderImpl extends V23BuilderImpl {
+        private static class V26BuilderImpl extends V24BuilderImpl {
+
+            V26BuilderImpl() {
+            }
+
+            V26BuilderImpl(@NonNull StrictMode.VmPolicy policy) {
+                super(policy);
+            }
 
             @Override
             public void detectUntaggedSockets() {
@@ -1067,5 +1147,61 @@ public class StrictModeCompat {
                 builder.detectContentUriWithoutPermission();
             }
         }
+
+        @TargetApi(Build.VERSION_CODES.P)
+        private static class V28BuilderImpl extends V26BuilderImpl {
+
+            V28BuilderImpl() {
+            }
+
+            V28BuilderImpl(@NonNull StrictMode.VmPolicy policy) {
+                super(policy);
+            }
+
+            @Override
+            public void detectNonSdkApiUsage() {
+                builder.detectNonSdkApiUsage();
+            }
+
+            @Override
+            public void permitNonSdkApiUsage() {
+                builder.permitNonSdkApiUsage();
+            }
+
+            @Override
+            public void penaltyListener(
+                    @NonNull Executor executor,
+                    @NonNull final OnVmViolationListener listener
+            ) {
+                builder.penaltyListener(executor,
+                        violation -> listener.onVmViolation(new ViolationCompat(violation)));
+            }
+        }
+    }
+
+    /**
+     * When {@link StrictMode.VmPolicy.Builder#penaltyListener(Executor, StrictMode.OnVmViolationListener)} is enabled,
+     * the listener is called on the provided executor when a VM violation occurs.
+     */
+    @FunctionalInterface
+    public interface OnVmViolationListener {
+
+        /**
+         * Called on a VM policy violation.
+         */
+        void onVmViolation(@NonNull ViolationCompat violation);
+    }
+
+    /**
+     * When {@link StrictMode.ThreadPolicy.Builder#penaltyListener(Executor, StrictMode.OnThreadViolationListener)} is enabled,
+     * the listener is called on the provided executor when a Thread violation occurs.
+     */
+    @FunctionalInterface
+    public interface OnThreadViolationListener {
+
+        /**
+         * Called on a thread policy violation.
+         */
+        void onThreadViolation(@NonNull ViolationCompat violation);
     }
 }

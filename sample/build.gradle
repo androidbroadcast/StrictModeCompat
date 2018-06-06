@@ -6,10 +6,10 @@ android {
 
     defaultConfig {
         applicationId "com.kirillr.application"
-        minSdkVersion 14
+        minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 260002
-        versionName "26.0.1"
+        versionCode rootProject.ext.versionCode
+        versionName rootProject.ext.versionName
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -23,12 +23,12 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_6
-        targetCompatibility JavaVersion.VERSION_1_6
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
 dependencies {
-    compile "com.android.support:appcompat-v7:$androidSupportLib"
-    compile project(':strict-mode-compat')
+    implementation "com.android.support:appcompat-v7:$androidSupportLib"
+    implementation project(':strict-mode-compat')
 }
