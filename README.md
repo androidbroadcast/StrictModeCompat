@@ -9,12 +9,12 @@ You must apply version of library for you project base on compileSdkVersion:
 
 ```groovy
 android {
-    compileSdkVersion 26
+    compileSdkVersion 28
     …
 }
 
 dependencies {
-    compile "com.kirich1409:strict-mode-compat:26.0.2"
+    compile "com.kirich1409:strict-mode-compat:28.0.0"
 }
 ```
 
@@ -70,7 +70,7 @@ Download
 --------
 
 ```groovy
-compile 'com.kirich1409:strict-mode-compat:26.0.2'
+compile 'com.kirich1409:strict-mode-compat:28.0.0'
 ```
 
 Kotlin Extensions
@@ -79,7 +79,7 @@ Kotlin Extensions
 For project that using Kotlin you can add
 
 ```groovy
-compile 'com.kirich1409:strict-mode-compat-kotlin:26.0.2'
+compile 'com.kirich1409:strict-mode-compat-kotlin:28.0.0'
 ```
 
 instead of dependency described in [Download](#Download)
@@ -87,7 +87,7 @@ instead of dependency described in [Download](#Download)
 License
 -------
 
-    Copyright 2017 Kirill Rozov
+    Copyright 2017-2018 Kirill Rozov
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
