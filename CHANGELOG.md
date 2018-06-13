@@ -1,6 +1,14 @@
 Change Log
 ==========
 
+Version 28.0.0 (2018-06-13)
+---------------------------
+Update to Android P SDK (Level 28)
+Fix bugs with init Strict Mode
+Update library min sdk to Android SDK 14
+Update Android Support Library to 27.1.2 
+Update Kotlin to 1.2.41
+
 Version 26.0.2 (2017-07-29)
 ---------------------------
 Adding Kotlin extensions library
