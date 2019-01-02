@@ -16,12 +16,16 @@ import android.os.strictmode.Violation;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import java.io.Closeable;
 import java.util.Locale;
 import java.util.concurrent.Executor;
 
 public class StrictModeCompat {
+
+    private final static String TAG = "StrictModeCompat";
+    private final static String FEATURE_NOT_SUPPORTED_MSG = "%s:%s is not supported";
 
     private StrictModeCompat() {
     }
@@ -33,8 +37,7 @@ public class StrictModeCompat {
      * with {@link #setThreadPolicy}, returning the old policy so you
      * can restore it at the end of a block.
      *
-     * @return the old policy, to be passed to setThreadPolicy to
-     * restore the policy.
+     * @return the old policy, to be passed to setThreadPolicy to restore the policy.
      */
     @NonNull
     public static StrictMode.ThreadPolicy allowThreadDiskReads() {
@@ -73,7 +76,7 @@ public class StrictModeCompat {
      *
      * @see StrictMode#getThreadPolicy()
      */
-    @Nullable
+    @NonNull
     public static StrictMode.ThreadPolicy getThreadPolicy() {
         return StrictMode.getThreadPolicy();
     }
@@ -81,7 +84,7 @@ public class StrictModeCompat {
     /**
      * Gets the current VM policy.
      */
-    @Nullable
+    @NonNull
     public static StrictMode.VmPolicy getVmPolicy() {
         return StrictMode.getVmPolicy();
     }
@@ -113,7 +116,7 @@ public class StrictModeCompat {
      * @see StrictModeCompat#noteSlowCall(String)
      * @see StrictModeCompat#noteSlowCall(Locale, String, Object...)
      */
-    public static void noteSlowCall(@NonNull String message, Object... args) {
+    public static void noteSlowCall(@NonNull String message, @NonNull Object... args) {
         StrictMode.noteSlowCall(String.format(message, args));
     }
 
@@ -130,8 +133,12 @@ public class StrictModeCompat {
      * @see StrictModeCompat#noteSlowCall(String)
      * @see StrictModeCompat#noteSlowCall(String, Object...)
      */
-    public static void noteSlowCall(@Nullable Locale locale, @NonNull String message, Object... args) {
-        StrictMode.noteSlowCall(String.format(locale, message, args));
+    public static void noteSlowCall(@Nullable Locale locale, @NonNull String message, @NonNull Object... args) {
+        if (locale == null) {
+            StrictMode.noteSlowCall(String.format(message, args));
+        } else {
+            StrictMode.noteSlowCall(String.format(locale, message, args));
+        }
     }
 
     /**
@@ -145,7 +152,7 @@ public class StrictModeCompat {
      *
      * @param policy the policy to put into place
      */
-    public static void setThreadPolicy(StrictMode.ThreadPolicy policy) {
+    public static void setThreadPolicy(@NonNull StrictMode.ThreadPolicy policy) {
         StrictMode.setThreadPolicy(policy);
     }
 
@@ -156,7 +163,7 @@ public class StrictModeCompat {
      *
      * @param policy the policy to put into place
      */
-    public static void setVmPolicy(StrictMode.VmPolicy policy) {
+    public static void setVmPolicy(@NonNull StrictMode.VmPolicy policy) {
         StrictMode.setVmPolicy(policy);
     }
 
@@ -166,10 +173,16 @@ public class StrictModeCompat {
      * @param threadPolicy the thread policy to put into place
      * @param vmPolicy     the vm policy to put into place
      */
-    public static void setPolicies(StrictMode.ThreadPolicy threadPolicy,
-                                   StrictMode.VmPolicy vmPolicy) {
+    public static void setPolicies(
+            @NonNull StrictMode.ThreadPolicy threadPolicy,
+            @NonNull StrictMode.VmPolicy vmPolicy
+    ) {
         setThreadPolicy(threadPolicy);
         setVmPolicy(vmPolicy);
+    }
+
+    private static void logUnsupportedFeature(@NonNull String category, @NonNull String feature) {
+        Log.d(TAG, String.format(Locale.US, FEATURE_NOT_SUPPORTED_MSG, category, feature));
     }
 
     public static class ThreadPolicy {
@@ -428,6 +441,8 @@ public class StrictModeCompat {
 
         private interface BuilderImpl {
 
+            String CATEGORY = "ThreadPolicy";
+
             StrictMode.ThreadPolicy build();
 
             default void detectAll() {
@@ -443,9 +458,6 @@ public class StrictModeCompat {
             }
 
             default void detectNetwork() {
-            }
-
-            default void detectResourceMismatches() {
             }
 
             default void penaltyDeath() {
@@ -481,19 +493,29 @@ public class StrictModeCompat {
             default void permitNetwork() {
             }
 
+            // Min sdk 23
+            default void detectResourceMismatches() {
+                logUnsupportedFeature(CATEGORY, "Resource mismatches");
+            }
+
+            // Min sdk 23
             default void permitResourceMismatches() {
+                logUnsupportedFeature(CATEGORY, "Resource mismatches");
             }
 
+            // Min sdk 26
             default void detectUnbufferedIo() {
+                logUnsupportedFeature(CATEGORY, "Unbuffered IO");
             }
 
+            // Min sdk 26
             default void permitUnbufferedIo() {
+                logUnsupportedFeature(CATEGORY, "Unbuffered IO");
             }
 
-            default void penaltyListener(
-                    @NonNull Executor executor,
-                    @NonNull OnThreadViolationListener listener
-            ) {
+            // Min sdk 28
+            default void penaltyListener(@NonNull Executor executor, @NonNull OnThreadViolationListener listener) {
+                logUnsupportedFeature(CATEGORY, "Penalty listener");
             }
         }
 
@@ -653,8 +675,8 @@ public class StrictModeCompat {
                     @NonNull Executor executor,
                     @NonNull final OnThreadViolationListener listener
             ) {
-                builder.penaltyListener(executor,
-                        violation -> listener.onThreadViolation(new ViolationCompat(violation))
+                builder.penaltyListener(
+                        executor, violation -> listener.onThreadViolation(new ViolationCompat(violation))
                 );
             }
         }
@@ -901,7 +923,6 @@ public class StrictModeCompat {
                 return this;
             }
 
-
             /**
              * Detect reflective usage of APIs that are not part of the public Android SDK.
              * <p/>
@@ -939,6 +960,8 @@ public class StrictModeCompat {
 
         private interface BuilderImpl {
 
+            String CATEGORY = "VmPolicy";
+
             StrictMode.VmPolicy build();
 
             default void detectActivityLeaks() {
@@ -947,16 +970,22 @@ public class StrictModeCompat {
             default void detectAll() {
             }
 
+            // Min SDK 23
             default void detectCleartextNetwork() {
+                logUnsupportedFeature(CATEGORY, "Cleartext network");
             }
 
+            // Min SDK 18
             default void detectFileUriExposure() {
+                logUnsupportedFeature(CATEGORY, "File uri exposure");
             }
 
             default void detectLeakedClosableObjects() {
             }
 
+            // Min SDK 16
             default void detectLeakedRegistrationObjects() {
+                logUnsupportedFeature(CATEGORY, "Leaked registration objects");
             }
 
             default void detectLeakedSqlLiteObjects() {
@@ -965,10 +994,14 @@ public class StrictModeCompat {
             default void penaltyDeath() {
             }
 
+            // Min SDK 23
             default void penaltyDeathOnCleartextNetwork() {
+                logUnsupportedFeature(CATEGORY, "Cleartext network");
             }
 
+            // Min SDK 24
             default void penaltyDeathOnFileUriExposure() {
+                logUnsupportedFeature(CATEGORY, "Penalty death on file uri exposure");
             }
 
             default void penaltyDropBox() {
@@ -981,20 +1014,30 @@ public class StrictModeCompat {
                                                @IntRange(from = 0) int instanceLimit) {
             }
 
+            // Min SDK 26
             default void detectContentUriWithoutPermission() {
+                logUnsupportedFeature(CATEGORY, "Content uri without permission");
             }
 
+            // Min SDK 26
             default void detectUntaggedSockets() {
+                logUnsupportedFeature(CATEGORY, "Untagged sockets");
             }
 
+            // Min SDK 28
             default void detectNonSdkApiUsage() {
+                logUnsupportedFeature(CATEGORY, "Non SDK api usage");
             }
 
+            // Min SDK 28
             default void penaltyListener(@NonNull Executor executor,
                                          @NonNull OnVmViolationListener listener) {
+                logUnsupportedFeature(CATEGORY, "Penalty listener");
             }
 
+            // Min SDK 28
             default void permitNonSdkApiUsage() {
+                logUnsupportedFeature(CATEGORY, "Non SDK api usage");
             }
         }
 

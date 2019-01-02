@@ -2,6 +2,7 @@ package com.kirillr.strictmodehelper;
 
 import android.os.strictmode.Violation;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.io.PrintStream;
 import java.io.PrintWriter;
@@ -15,26 +16,31 @@ public final class ViolationCompat extends Throwable {
         this.violation = violation;
     }
 
+    @Nullable
     @Override
     public String getMessage() {
         return violation.getMessage();
     }
 
+    @Nullable
     @Override
     public String getLocalizedMessage() {
         return violation.getLocalizedMessage();
     }
 
+    @Nullable
     @Override
-    public synchronized Throwable getCause() {
+    public Throwable getCause() {
         return violation.getCause();
     }
 
+    @NonNull
     @Override
-    public synchronized Throwable initCause(Throwable cause) {
+    public Throwable initCause(@Nullable Throwable cause) {
         return violation.initCause(cause);
     }
 
+    @NonNull
     @Override
     public String toString() {
         return violation.toString();
@@ -46,27 +52,29 @@ public final class ViolationCompat extends Throwable {
     }
 
     @Override
-    public void printStackTrace(PrintStream s) {
+    public void printStackTrace(@NonNull PrintStream s) {
         violation.printStackTrace(s);
     }
 
     @Override
-    public void printStackTrace(PrintWriter s) {
+    public void printStackTrace(@NonNull PrintWriter s) {
         violation.printStackTrace(s);
     }
 
+    @NonNull
     @Override
-    public synchronized Throwable fillInStackTrace() {
+    public Throwable fillInStackTrace() {
         return violation.fillInStackTrace();
     }
 
+    @NonNull
     @Override
     public StackTraceElement[] getStackTrace() {
         return violation.getStackTrace();
     }
 
     @Override
-    public void setStackTrace(StackTraceElement[] stackTrace) {
+    public void setStackTrace(@NonNull StackTraceElement[] stackTrace) {
         violation.setStackTrace(stackTrace);
     }
 
@@ -76,7 +84,7 @@ public final class ViolationCompat extends Throwable {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@Nullable Object o) {
         if (this == o) {
             return true;
         }
