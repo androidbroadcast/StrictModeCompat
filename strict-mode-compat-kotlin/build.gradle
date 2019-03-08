@@ -19,3 +19,7 @@ dependencies {
     api project(":strict-mode-compat")
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
+
+tasks.withType(Class.forName("com.android.build.gradle.tasks.GenerateBuildConfig")) {
+    enabled = false
+}

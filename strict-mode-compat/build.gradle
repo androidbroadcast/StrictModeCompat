@@ -29,3 +29,7 @@ apply from: 'publish.gradle'
 dependencies {
     implementation "com.android.support:support-annotations:$androidSupportLib"
 }
+
+tasks.withType(Class.forName("com.android.build.gradle.tasks.GenerateBuildConfig")) {
+    enabled = false
+}
