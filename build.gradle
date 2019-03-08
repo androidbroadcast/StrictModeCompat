@@ -17,8 +17,8 @@ buildscript {
 }
 
 ext {
-    androidSupportLib = '28.0.0'
-    libraryVersion = '28.0.0'
+    androidXAnnotationsVersion = '1.0.2'
+    androidXAppCompatVersion = '1.0.2'
 
     minSdkVersion = 14
     compileSdkVersion = 28
@@ -30,7 +30,7 @@ ext {
 }
 
 group = 'by.kirich1409'
-version = ext.libraryVersion
+version = ext.versionName
 
 allprojects {
     repositories {

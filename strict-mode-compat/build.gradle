@@ -8,7 +8,7 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode rootProject.ext.versionCode
-        versionName rootProject.ext.libraryVersion
+        versionName rootProject.ext.versionName
     }
 
     buildTypes {
@@ -27,7 +27,7 @@ android {
 apply from: 'publish.gradle'
 
 dependencies {
-    implementation "com.android.support:support-annotations:$androidSupportLib"
+    implementation "androidx.annotation:annotation:$androidXAnnotationsVersion"
 }
 
 tasks.withType(Class.forName("com.android.build.gradle.tasks.GenerateBuildConfig")) {

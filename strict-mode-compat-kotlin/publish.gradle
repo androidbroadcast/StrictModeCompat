@@ -1,5 +1,5 @@
 group = 'com.kirich1409'
-version = rootProject.ext.libraryVersion
+version = rootProject.ext.versionName
 
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
@@ -7,19 +7,13 @@ apply plugin: 'com.jfrog.bintray'
 def siteUrl = 'https://github.com/kirich1409/StrictModeCompat'
 def gitRepoUrl = 'https://github.com/kirich1409/StrictModeCompat.git'
 
-task sourcesJar(type: Jar) {
+def sourcesJar = tasks.register("sourcesJar", Jar) {
     archiveClassifier.set('sources')
     from android.sourceSets.main.java.srcDirs
 }
 
 artifacts {
     archives sourcesJar
-}
-
-task findConventions {
-    doLast {
-        println project.getConvention()
-    }
 }
 
 bintray {
@@ -44,7 +38,7 @@ bintray {
         githubReleaseNotesFile = 'README.md' //Optional Github readme file
 
         version {
-            name = rootProject.ext.libraryVersion
+            name = rootProject.ext.versionName
             desc = 'Android StrictMode Compat on Kotlin'
             released = new Date()
         }

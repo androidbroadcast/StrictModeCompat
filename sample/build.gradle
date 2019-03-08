@@ -29,6 +29,6 @@ android {
 }
 
 dependencies {
-    implementation "com.android.support:appcompat-v7:$androidSupportLib"
+    implementation "androidx.appcompat:appcompat:$androidXAppCompatVersion"
     implementation project(':strict-mode-compat')
 }

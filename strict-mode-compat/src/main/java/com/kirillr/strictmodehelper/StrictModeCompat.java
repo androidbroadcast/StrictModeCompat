@@ -13,14 +13,15 @@ import android.os.Build;
 import android.os.DropBoxManager;
 import android.os.StrictMode;
 import android.os.strictmode.Violation;
-import android.support.annotation.IntRange;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.Log;
 
 import java.io.Closeable;
 import java.util.Locale;
 import java.util.concurrent.Executor;
+
+import androidx.annotation.IntRange;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public final class StrictModeCompat {
 
