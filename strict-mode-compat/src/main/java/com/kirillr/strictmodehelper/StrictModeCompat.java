@@ -22,7 +22,7 @@ import java.io.Closeable;
 import java.util.Locale;
 import java.util.concurrent.Executor;
 
-public class StrictModeCompat {
+public final class StrictModeCompat {
 
     private final static String TAG = "StrictModeCompat";
     private final static String FEATURE_NOT_SUPPORTED_MSG = "%s:%s is not supported";
@@ -185,7 +185,7 @@ public class StrictModeCompat {
         Log.d(TAG, String.format(Locale.US, FEATURE_NOT_SUPPORTED_MSG, category, feature));
     }
 
-    public static class ThreadPolicy {
+    public final static class ThreadPolicy {
 
         private ThreadPolicy() {
         }
@@ -445,78 +445,52 @@ public class StrictModeCompat {
 
             StrictMode.ThreadPolicy build();
 
-            default void detectAll() {
-            }
+            void detectAll();
 
-            default void detectCustomSlowCalls() {
-            }
+            void detectCustomSlowCalls();
 
-            default void detectDiskReads() {
-            }
+            void detectDiskReads();
 
-            default void detectDiskWrites() {
-            }
+            void detectDiskWrites();
 
-            default void detectNetwork() {
-            }
+            void detectNetwork();
 
-            default void penaltyDeath() {
-            }
+            void penaltyDeath();
 
-            default void penaltyDeathOnNetwork() {
-            }
+            void penaltyDeathOnNetwork();
 
-            default void penaltyDialog() {
-            }
+            void penaltyDialog();
 
-            default void penaltyDropBox() {
-            }
+            void penaltyDropBox();
 
-            default void penaltyFlashScreen() {
-            }
+            void penaltyFlashScreen();
 
-            default void penaltyLog() {
-            }
+            void penaltyLog();
 
-            default void permitAll() {
-            }
+            void permitAll();
 
-            default void permitCustomSlowCalls() {
-            }
+            void permitCustomSlowCalls();
 
-            default void permitDiskReads() {
-            }
+            void permitDiskReads();
 
-            default void permitDiskWrites() {
-            }
+            void permitDiskWrites();
 
-            default void permitNetwork() {
-            }
+            void permitNetwork();
 
             // Min sdk 23
-            default void detectResourceMismatches() {
-                logUnsupportedFeature(CATEGORY, "Resource mismatches");
-            }
+            void detectResourceMismatches();
 
             // Min sdk 23
-            default void permitResourceMismatches() {
-                logUnsupportedFeature(CATEGORY, "Resource mismatches");
-            }
+            void permitResourceMismatches();
 
             // Min sdk 26
-            default void detectUnbufferedIo() {
-                logUnsupportedFeature(CATEGORY, "Unbuffered IO");
-            }
+            void detectUnbufferedIo();
 
             // Min sdk 26
-            default void permitUnbufferedIo() {
-                logUnsupportedFeature(CATEGORY, "Unbuffered IO");
-            }
+            void permitUnbufferedIo();
 
             // Min sdk 28
-            default void penaltyListener(@NonNull Executor executor, @NonNull OnThreadViolationListener listener) {
-                logUnsupportedFeature(CATEGORY, "Penalty listener");
-            }
+            void penaltyListener(@NonNull Executor executor, @NonNull OnThreadViolationListener listener);
         }
 
         private static class BaseBuilderImpl implements BuilderImpl {
@@ -616,6 +590,36 @@ public class StrictModeCompat {
             public void permitNetwork() {
                 builder.permitNetwork();
             }
+
+            // Min sdk 23
+            @Override
+            public void detectResourceMismatches() {
+                logUnsupportedFeature(CATEGORY, "Resource mismatches");
+            }
+
+            // Min sdk 23
+            @Override
+            public void permitResourceMismatches() {
+                logUnsupportedFeature(CATEGORY, "Resource mismatches");
+            }
+
+            // Min sdk 26
+            @Override
+            public void detectUnbufferedIo() {
+                logUnsupportedFeature(CATEGORY, "Unbuffered IO");
+            }
+
+            // Min sdk 26
+            @Override
+            public void permitUnbufferedIo() {
+                logUnsupportedFeature(CATEGORY, "Unbuffered IO");
+            }
+
+            // Min sdk 28
+            @Override
+            public void penaltyListener(@NonNull Executor executor, @NonNull OnThreadViolationListener listener) {
+                logUnsupportedFeature(CATEGORY, "Penalty listener");
+            }
         }
 
         @TargetApi(Build.VERSION_CODES.M)
@@ -676,7 +680,15 @@ public class StrictModeCompat {
                     @NonNull final OnThreadViolationListener listener
             ) {
                 builder.penaltyListener(
-                        executor, violation -> listener.onThreadViolation(new ViolationCompat(violation))
+                        executor,
+                        new StrictMode.OnThreadViolationListener() {
+
+                            @TargetApi(Build.VERSION_CODES.O)
+                            @Override
+                            public void onThreadViolation(@NonNull Violation violation) {
+                                listener.onThreadViolation(violation);
+                            }
+                        }
                 );
             }
         }
@@ -964,81 +976,51 @@ public class StrictModeCompat {
 
             StrictMode.VmPolicy build();
 
-            default void detectActivityLeaks() {
-            }
+            void detectActivityLeaks();
 
-            default void detectAll() {
-            }
+            void detectAll();
 
             // Min SDK 23
-            default void detectCleartextNetwork() {
-                logUnsupportedFeature(CATEGORY, "Cleartext network");
-            }
+            void detectCleartextNetwork();
 
             // Min SDK 18
-            default void detectFileUriExposure() {
-                logUnsupportedFeature(CATEGORY, "File uri exposure");
-            }
+            void detectFileUriExposure();
 
-            default void detectLeakedClosableObjects() {
-            }
+            void detectLeakedClosableObjects();
 
             // Min SDK 16
-            default void detectLeakedRegistrationObjects() {
-                logUnsupportedFeature(CATEGORY, "Leaked registration objects");
-            }
+            void detectLeakedRegistrationObjects();
 
-            default void detectLeakedSqlLiteObjects() {
-            }
+            void detectLeakedSqlLiteObjects();
 
-            default void penaltyDeath() {
-            }
+            void penaltyDeath();
 
             // Min SDK 23
-            default void penaltyDeathOnCleartextNetwork() {
-                logUnsupportedFeature(CATEGORY, "Cleartext network");
-            }
+            void penaltyDeathOnCleartextNetwork();
 
             // Min SDK 24
-            default void penaltyDeathOnFileUriExposure() {
-                logUnsupportedFeature(CATEGORY, "Penalty death on file uri exposure");
-            }
+            void penaltyDeathOnFileUriExposure();
 
-            default void penaltyDropBox() {
-            }
+            void penaltyDropBox();
 
-            default void penaltyLog() {
-            }
+            void penaltyLog();
 
-            default void setClassInstanceLimit(@NonNull Class<?> klass,
-                                               @IntRange(from = 0) int instanceLimit) {
-            }
+            void setClassInstanceLimit(@NonNull Class<?> klass, @IntRange(from = 0) int instanceLimit);
 
             // Min SDK 26
-            default void detectContentUriWithoutPermission() {
-                logUnsupportedFeature(CATEGORY, "Content uri without permission");
-            }
+            void detectContentUriWithoutPermission();
 
             // Min SDK 26
-            default void detectUntaggedSockets() {
-                logUnsupportedFeature(CATEGORY, "Untagged sockets");
-            }
+            void detectUntaggedSockets();
 
             // Min SDK 28
-            default void detectNonSdkApiUsage() {
-                logUnsupportedFeature(CATEGORY, "Non SDK api usage");
-            }
+            void detectNonSdkApiUsage();
 
             // Min SDK 28
-            default void penaltyListener(@NonNull Executor executor,
-                                         @NonNull OnVmViolationListener listener) {
-                logUnsupportedFeature(CATEGORY, "Penalty listener");
-            }
+            void penaltyListener(@NonNull Executor executor, @NonNull OnVmViolationListener listener);
 
             // Min SDK 28
-            default void permitNonSdkApiUsage() {
-                logUnsupportedFeature(CATEGORY, "Non SDK api usage");
-            }
+            void permitNonSdkApiUsage();
         }
 
         private static class BaseBuilderImpl implements BuilderImpl {
@@ -1065,13 +1047,38 @@ public class StrictModeCompat {
             }
 
             @Override
+            public void detectCleartextNetwork() {
+                logUnsupportedFeature(CATEGORY, "Cleartext network");
+            }
+
+            @Override
+            public void detectFileUriExposure() {
+                logUnsupportedFeature(CATEGORY, "File uri exposure");
+            }
+
+            @Override
             public void detectLeakedSqlLiteObjects() {
                 builder.detectLeakedSqlLiteObjects();
             }
 
             @Override
+            public void detectLeakedRegistrationObjects() {
+                logUnsupportedFeature(CATEGORY, "Leaked registration objects");
+            }
+
+            @Override
             public void penaltyDeath() {
                 builder.penaltyDeath();
+            }
+
+            @Override
+            public void penaltyDeathOnCleartextNetwork() {
+                logUnsupportedFeature(CATEGORY, "Cleartext network");
+            }
+
+            @Override
+            public void penaltyDeathOnFileUriExposure() {
+                logUnsupportedFeature(CATEGORY, "Penalty death on file uri exposure");
             }
 
             @Override
@@ -1098,6 +1105,32 @@ public class StrictModeCompat {
             public void setClassInstanceLimit(@NonNull Class<?> klass,
                                               @IntRange(from = 0) int instanceLimit) {
                 builder.setClassInstanceLimit(klass, instanceLimit);
+            }
+
+            @Override
+            public void detectContentUriWithoutPermission() {
+                logUnsupportedFeature(CATEGORY, "Content uri without permission");
+            }
+
+            @Override
+            public void detectUntaggedSockets() {
+                logUnsupportedFeature(CATEGORY, "Untagged sockets");
+            }
+
+            @Override
+            public void detectNonSdkApiUsage() {
+                logUnsupportedFeature(CATEGORY, "Non SDK api usage");
+            }
+
+            @Override
+            public void penaltyListener(@NonNull Executor executor,
+                                        @NonNull OnVmViolationListener listener) {
+                logUnsupportedFeature(CATEGORY, "Penalty listener");
+            }
+
+            @Override
+            public void permitNonSdkApiUsage() {
+                logUnsupportedFeature(CATEGORY, "Non SDK api usage");
             }
         }
 
@@ -1216,8 +1249,17 @@ public class StrictModeCompat {
                     @NonNull Executor executor,
                     @NonNull final OnVmViolationListener listener
             ) {
-                builder.penaltyListener(executor,
-                        violation -> listener.onVmViolation(new ViolationCompat(violation)));
+                builder.penaltyListener(
+                        executor,
+                        new StrictMode.OnVmViolationListener() {
+
+                            @TargetApi(Build.VERSION_CODES.O)
+                            @Override
+                            public void onVmViolation(Violation violation) {
+                                listener.onVmViolation(violation);
+                            }
+                        }
+                );
             }
         }
     }
@@ -1226,25 +1268,25 @@ public class StrictModeCompat {
      * When {@link StrictMode.VmPolicy.Builder#penaltyListener(Executor, StrictMode.OnVmViolationListener)} is enabled,
      * the listener is called on the provided executor when a VM violation occurs.
      */
-    @FunctionalInterface
     public interface OnVmViolationListener {
 
         /**
          * Called on a VM policy violation.
          */
-        void onVmViolation(@NonNull ViolationCompat violation);
+        @TargetApi(Build.VERSION_CODES.O)
+        void onVmViolation(@NonNull Violation violation);
     }
 
     /**
      * When {@link StrictMode.ThreadPolicy.Builder#penaltyListener(Executor, StrictMode.OnThreadViolationListener)} is enabled,
      * the listener is called on the provided executor when a Thread violation occurs.
      */
-    @FunctionalInterface
     public interface OnThreadViolationListener {
 
         /**
          * Called on a thread policy violation.
          */
-        void onThreadViolation(@NonNull ViolationCompat violation);
+        @TargetApi(Build.VERSION_CODES.O)
+        void onThreadViolation(@NonNull Violation violation);
     }
 }

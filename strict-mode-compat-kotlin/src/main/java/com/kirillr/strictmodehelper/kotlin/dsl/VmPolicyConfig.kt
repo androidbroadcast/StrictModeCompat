@@ -2,7 +2,8 @@ package com.kirillr.strictmodehelper.kotlin.dsl
 
 import kotlin.reflect.KClass
 
-class VmPolicyConfig internal constructor(private val enableDefaults: Boolean) {
+@VmPolicyDsl
+class VmPolicyConfig internal constructor(enableDefaults: Boolean) {
 
     var activityLeaks = if (enableDefaults) DEFAULT_ACTIVITY_LEAKS else false
     var cleartextNetwork = if (enableDefaults) DEFAULT_CLEARTEXT_NETWORK else false
@@ -16,12 +17,11 @@ class VmPolicyConfig internal constructor(private val enableDefaults: Boolean) {
 
     var classesInstanceLimit = mapOf<KClass<*>, Int>()
 
-    internal var penaltyConfig: PenaltyConfig? = null
+    internal var penaltyConfig = PenaltyConfig(enableDefaults)
         private set
 
-    fun penalty(config: (@StrictModeDsl PenaltyConfig.() -> Unit)) {
-        val penaltyConfig = if (enableDefaults) PenaltyConfig.default() else PenaltyConfig.disableAll()
-        this.penaltyConfig = penaltyConfig.apply(config)
+    fun penalty(config: (@VmPolicyDsl PenaltyConfig.() -> Unit)) {
+        this.penaltyConfig.apply(config)
     }
 
     private companion object {
@@ -47,7 +47,11 @@ class VmPolicyConfig internal constructor(private val enableDefaults: Boolean) {
 
         internal companion object {
 
-            internal fun disableAll(): PenaltyConfig {
+            internal operator fun invoke(enableDefaults: Boolean): PenaltyConfig {
+                return if (enableDefaults) default() else disableAll()
+            }
+
+            private fun disableAll(): PenaltyConfig {
                 return PenaltyConfig(
                     death = false,
                     deathOnCleartextNetwork = false,
@@ -57,7 +61,7 @@ class VmPolicyConfig internal constructor(private val enableDefaults: Boolean) {
                 )
             }
 
-            internal fun default(): PenaltyConfig {
+            private fun default(): PenaltyConfig {
                 return PenaltyConfig(
                     death = DEFAULT_DEATH,
                     deathOnCleartextNetwork = DEFAULT_DEATH_ON_CLEARTEXT_NETWORK,

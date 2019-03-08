@@ -1,6 +1,7 @@
 package com.kirillr.strictmodehelper.kotlin.dsl
 
-class ThreadPolicyConfig internal constructor(private val enableDefaults: Boolean) {
+@ThreadPolicyDsl
+class ThreadPolicyConfig internal constructor(enableDefaults: Boolean) {
 
     var customSlowCalls = if (enableDefaults) DEFAULT_CUSTOM_SLOW_CALLS else false
     var diskReads = if (enableDefaults) DEFAULT_DISK_READS else false
@@ -9,11 +10,11 @@ class ThreadPolicyConfig internal constructor(private val enableDefaults: Boolea
     var resourceMismatches = if (enableDefaults) DEFAULT_RESOURCE_MISMATCHES else false
     var unbufferedIo = if (enableDefaults) DEFAULT_UNBUFFERED_IO else false
 
-    internal var penaltyConfig: PenaltyConfig? = null
+    internal var penaltyConfig = PenaltyConfig(enableDefaults)
         private set
 
-    fun penalty(config: (@StrictModeDsl PenaltyConfig.() -> Unit)) {
-        this.penaltyConfig = PenaltyConfig(enableDefaults).apply(config)
+    fun penalty(config: (@ThreadPolicyDsl PenaltyConfig.() -> Unit)) {
+        this.penaltyConfig.apply(config)
     }
 
     private companion object {
@@ -26,15 +27,42 @@ class ThreadPolicyConfig internal constructor(private val enableDefaults: Boolea
         private const val DEFAULT_UNBUFFERED_IO = true
     }
 
-    class PenaltyConfig internal constructor(enableDefaults: Boolean) {
-        var death = if (enableDefaults) DEFAULT_DEATH else false
-        var deathOnNetwork = if (enableDefaults) DEFAULT_DEATH_ON_NETWORK else false
-        var dialog = if (enableDefaults) DEFAULT_DIALOG else false
-        var dropBox = if (enableDefaults) DEFAULT_DROPBOX else false
-        var flashScreen = if (enableDefaults) DEFAULT_FLASH_SCREEN else false
-        var log = if (enableDefaults) DEFAULT_LOG else false
+    class PenaltyConfig private constructor(
+        var death: Boolean,
+        var deathOnNetwork: Boolean,
+        var dialog: Boolean,
+        var dropBox: Boolean,
+        var flashScreen: Boolean,
+        var log: Boolean
+    ) {
 
-        private companion object {
+        internal companion object {
+
+            internal operator fun invoke(enableDefaults: Boolean): PenaltyConfig {
+                return if (enableDefaults) default() else disableAll()
+            }
+
+            private fun disableAll(): PenaltyConfig {
+                return PenaltyConfig(
+                    death = false,
+                    deathOnNetwork = false,
+                    dialog = false,
+                    dropBox = false,
+                    flashScreen = false,
+                    log = false
+                )
+            }
+
+            private fun default(): PenaltyConfig {
+                return PenaltyConfig(
+                    death = DEFAULT_DEATH,
+                    deathOnNetwork = DEFAULT_DEATH_ON_NETWORK,
+                    dialog = DEFAULT_DIALOG,
+                    dropBox = DEFAULT_DROPBOX,
+                    flashScreen = DEFAULT_FLASH_SCREEN,
+                    log = DEFAULT_LOG
+                )
+            }
 
             private const val DEFAULT_DEATH = false
             private const val DEFAULT_DEATH_ON_NETWORK = false

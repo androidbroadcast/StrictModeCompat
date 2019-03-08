@@ -1,18 +1,19 @@
 package com.kirillr.strictmodehelper.kotlin.dsl
 
-class StrictModeConfig internal constructor(private val enableDefaults: Boolean) {
+@StrictModeDsl
+class StrictModeConfig internal constructor(enableDefaults: Boolean) {
 
-    internal var threadPolicyConfig: ThreadPolicyConfig? = null
+    internal var threadPolicyConfig = ThreadPolicyConfig(enableDefaults)
         private set
 
-    internal var vmPolicyConfig: VmPolicyConfig? = null
+    internal var vmPolicyConfig = VmPolicyConfig(enableDefaults)
         private set
 
     fun threadPolicy(config: (@StrictModeDsl ThreadPolicyConfig.() -> Unit)) {
-        threadPolicyConfig = ThreadPolicyConfig(enableDefaults).apply(config)
+        threadPolicyConfig.apply(config)
     }
 
     fun vmPolicy(config: (@StrictModeDsl VmPolicyConfig.() -> Unit)) {
-        vmPolicyConfig = VmPolicyConfig(enableDefaults).apply(config)
+        vmPolicyConfig.apply(config)
     }
 }

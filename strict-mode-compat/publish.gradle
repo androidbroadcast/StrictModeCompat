@@ -8,18 +8,12 @@ def siteUrl = 'https://github.com/kirich1409/StrictModeCompat'
 def gitRepoUrl = 'https://github.com/kirich1409/StrictModeCompat.git'
 
 task sourcesJar(type: Jar) {
-    classifier = 'sources'
+    archiveClassifier.set('sources')
     from android.sourceSets.main.java.srcDirs
 }
 
 artifacts {
     archives sourcesJar
-}
-
-task findConventions {
-    doLast {
-        println project.getConvention()
-    }
 }
 
 bintray {
@@ -47,10 +41,6 @@ bintray {
             name = rootProject.ext.libraryVersion
             desc = 'Android StrictMode Compat Library'
             released = new Date()
-            gpg {
-                sign = true
-                passphrase = project.hasProperty('gpgPassword') ? project.property('gpgPassword') : System.getenv('BINTRAY_GPG_PASSWORD')
-            }
         }
     }
 }
@@ -72,7 +62,7 @@ install {
                     developer {
                         id 'kirich1409'
                         name 'Kirill Rozov'
-                        email 'kirich1409@gmail.com'
+                        email 'krl.rozov@gmail.com'
                     }
                 }
                 scm {

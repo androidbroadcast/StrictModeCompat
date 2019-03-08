@@ -3,7 +3,8 @@ package com.kirillr.strictmodehelper.kotlin.dsl
 import android.os.StrictMode
 import com.kirillr.strictmodehelper.StrictModeCompat
 
-fun initStrictMode(enableDefaults: Boolean = true, config: (@StrictModeDsl StrictModeConfig.() -> Unit)) {
+@Suppress("unused")
+fun initStrictMode(enableDefaults: Boolean = true, config: (StrictModeConfig.() -> Unit)) {
     StrictModeConfig(enableDefaults).apply {
         config()
         buildThreadPolicy(threadPolicyConfig)?.let(StrictMode::setThreadPolicy)
@@ -34,7 +35,7 @@ private fun buildThreadPolicy(config: ThreadPolicyConfig?): StrictMode.ThreadPol
         threadPolicyBuilder.detectUnbufferedIo()
     }
 
-    config.penaltyConfig?.let { penaltyConfig ->
+    config.penaltyConfig.let { penaltyConfig ->
         if (penaltyConfig.death) {
             threadPolicyBuilder.penaltyDeath()
         }
@@ -93,7 +94,7 @@ private fun buildVmPolicy(config: VmPolicyConfig?): StrictMode.VmPolicy? {
         vmPolicyBuilder.setClassInstanceLimit(clazz.java, limit)
     }
 
-    config.penaltyConfig?.let { penaltyConfig ->
+    config.penaltyConfig.let { penaltyConfig ->
         if (penaltyConfig.death) {
             vmPolicyBuilder.penaltyDeath()
         }

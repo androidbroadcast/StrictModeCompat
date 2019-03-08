@@ -1,7 +1,7 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-    ext.kotlin_version = '1.3.11'
+    ext.kotlin_version = '1.3.21'
 
     repositories {
         google()
@@ -9,14 +9,11 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.3.0-rc03'
+        classpath 'com.android.tools.build:gradle:3.4.0-rc01'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
     }
-}
-
-plugins {
-    id "com.jfrog.bintray" version "1.8.4"
 }
 
 ext {
@@ -28,8 +25,8 @@ ext {
     targetSdkVersion = 27
     buildToolsVersion = '28.0.3'
 
-    versionName = '28.0.0'
-    versionCode = 280000
+    versionName = '28.1.0'
+    versionCode = versionName.split("\\.").collect { String.format("%02d", it.toInteger()) }.join().toInteger()
 }
 
 group = 'by.kirich1409'
@@ -39,6 +36,5 @@ allprojects {
     repositories {
         google()
         jcenter()
-        maven { url 'https://dl.bintray.com/kirich1409/maven/' }
     }
 }

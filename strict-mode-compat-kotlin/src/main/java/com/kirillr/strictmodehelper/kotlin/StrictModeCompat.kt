@@ -9,19 +9,22 @@ import com.kirillr.strictmodehelper.StrictModeCompat
  * @date 29/7/17.
  */
 @Suppress("unused")
-object StrictModeCompat {
+class StrictModeCompat private constructor() {
 
-    /**
-     * For code to note that it's slow. This is a no-op unless the
-     * current thread's [android.os.StrictMode.ThreadPolicy] has
-     * [android.os.StrictMode.ThreadPolicy.Builder.detectCustomSlowCalls] enabled.
-     *
-     * @param lazyMessage Short string for the exception stack trace that's built if when this fires.
-     *
-     * @see StrictModeCompat.noteSlowCall
-     */
-    @JvmStatic
-    inline fun noteSlowCall(lazyMessage: () -> String) {
-        com.kirillr.strictmodehelper.StrictModeCompat.noteSlowCall(lazyMessage())
+    companion object {
+
+        /**
+         * For code to note that it's slow. This is a no-op unless the
+         * current thread's [android.os.StrictMode.ThreadPolicy] has
+         * [android.os.StrictMode.ThreadPolicy.Builder.detectCustomSlowCalls] enabled.
+         *
+         * @param lazyMessage Short string for the exception stack trace that's built if when this fires.
+         *
+         * @see StrictModeCompat.noteSlowCall
+         */
+        @JvmStatic
+        inline fun noteSlowCall(lazyMessage: () -> String) {
+            com.kirillr.strictmodehelper.StrictModeCompat.noteSlowCall(lazyMessage())
+        }
     }
 }
