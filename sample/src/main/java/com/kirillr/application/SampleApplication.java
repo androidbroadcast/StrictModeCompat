@@ -10,55 +10,24 @@ import java.util.concurrent.Executors;
 
 public class SampleApplication extends Application {
 
-    private static final String TAG = "Sample";
-
     @Override
     public void onCreate() {
         super.onCreate();
         if (BuildConfig.DEVELOPER_MODE) {
             StrictMode.ThreadPolicy threadPolicy = new StrictModeCompat.ThreadPolicy.Builder()
-                    .detectAll()
-                    .detectCustomSlowCalls()
-                    .detectDiskReads()
-                    .detectDiskWrites()
-                    .detectNetwork()
                     .detectResourceMismatches()
-                    .detectUnbufferedIo()
-                    .penaltyDeath()
-                    .penaltyDeathOnNetwork()
-                    .penaltyDialog()
-                    .penaltyDropBox()
-                    .penaltyFlashScreen()
-                    .penaltyListener(Executors.newSingleThreadExecutor(), violation -> Log.e(TAG, "", violation))
+                    .detectCustomSlowCalls()
+                    .detectUnbufferedIo()  // Available only on Android 8.0+
                     .penaltyLog()
-                    .permitAll()
-                    .permitCustomSlowCalls()
-                    .permitDiskReads()
-                    .permitDiskWrites()
-                    .permitNetwork()
-                    .permitResourceMismatches()
-                    .permitUnbufferedIo()
                     .build();
 
             StrictMode.VmPolicy vmPolicy = new StrictModeCompat.VmPolicy.Builder()
-                    .detectActivityLeaks()
-                    .detectAll()
-                    .detectCleartextNetwork()
-                    .detectContentUriWithoutPermission()
                     .detectFileUriExposure()
-                    .detectLeakedClosableObjects()
                     .detectLeakedRegistrationObjects()
-                    .detectLeakedSqlLiteObjects()
-                    .detectNonSdkApiUsage()
-                    .detectUntaggedSockets()
-                    .penaltyDeath()
-                    .penaltyDeathOnCleartextNetwork()
-                    .penaltyDeathOnFileUriExposure()
-                    .penaltyDropBox()
-                    .penaltyListener(Executors.newSingleThreadExecutor(), violation -> Log.e(TAG, "", violation))
+                    .detectCleartextNetwork()
+                    .detectUntaggedSockets() // Available only on Android 8.0+
+                    .detectContentUriWithoutPermission()  // Available only on Android 8.0+
                     .penaltyLog()
-                    .permitNonSdkApiUsage()
-                    .setClassInstanceLimit(Object.class, 100)
                     .build();
 
             StrictModeCompat.setPolicies(threadPolicy, vmPolicy);
