@@ -20,7 +20,7 @@ dependencies {
     implementation "com.kirich1409:strict-mode-compat:28.0.0"
 
     // Kotlin Extensions
-    implementation "com.kirich1409:strict-mode-compat-kotlin:28.1.1"
+    implementation "com.kirich1409:strict-mode-compat-kotlin:28.1.2"
 }
 ```
 
@@ -30,13 +30,13 @@ Sample
 ###### build.gradle ######
 ```groovy
 android {
-    defaultConfig {
-        buildConfigField 'boolean', 'DEVELOPER_MODE', 'false'
-    }
-
     buildTypes {
         debug {
             buildConfigField 'boolean', 'DEVELOPER_MODE', 'true'
+        }
+        
+        release {
+            buildConfigField 'boolean', 'DEVELOPER_MODE', 'false'
         }
     }
 }

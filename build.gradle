@@ -16,6 +16,10 @@ buildscript {
     }
 }
 
+def getVersionCode(String versionName) {
+    return versionName.split("\\.").collect { String.format("%02d", it.toInteger()) }.join().toInteger()
+}
+
 ext {
     androidXAnnotationsVersion = '1.0.2'
     androidXAppCompatVersion = '1.0.2'
@@ -25,8 +29,9 @@ ext {
     targetSdkVersion = 27
     buildToolsVersion = '28.0.3'
 
-    versionName = '28.1.1'
-    versionCode = versionName.split("\\.").collect { String.format("%02d", it.toInteger()) }.join().toInteger()
+    strictModeCompatVersionName = '28.1.0'
+    versionName = strictModeCompatVersionName
+    strictModeCompatKotlinVersionName = '28.1.2'
 }
 
 group = 'by.kirich1409'

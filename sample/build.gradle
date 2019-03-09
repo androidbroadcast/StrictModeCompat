@@ -9,7 +9,7 @@ android {
         applicationId "com.kirillr.application"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode rootProject.ext.versionCode
+        versionCode getVersionCode(rootProject.ext.versionName)
         versionName rootProject.ext.versionName
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"

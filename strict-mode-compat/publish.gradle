@@ -1,5 +1,5 @@
 group = 'com.kirich1409'
-version = rootProject.ext.versionName
+version = rootProject.ext.strictModeCompatVersionName
 
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
@@ -50,7 +50,7 @@ bintray {
         githubReleaseNotesFile = 'README.md' //Optional Github readme file
 
         version {
-            name = rootProject.ext.versionName
+            name = rootProject.ext.strictModeCompatVersionName
             desc = 'Android StrictMode Compat Library'
             released = new Date()
         }
