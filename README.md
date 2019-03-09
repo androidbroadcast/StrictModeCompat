@@ -9,8 +9,7 @@ You must apply version of library for you project base on compileSdkVersion:
 
 ```groovy
 android {
-    compileSdkVersion 28
-    …
+    compileSdkVersion 28 // 28 is required minimum
 }
 
 dependencies {    
@@ -19,6 +18,9 @@ dependencies {
     
     // Without AndroidX
     implementation "com.kirich1409:strict-mode-compat:28.0.0"
+
+    // Kotlin Extensions
+    implementation "com.kirich1409:strict-mode-compat-kotlin:28.1.1"
 }
 ```
 
@@ -70,23 +72,40 @@ public class SampleApplication extends Application {
 }
 ```
 
-Download
---------
+Or you can use Kotlin extension and configure StrictModeCompat via DSL
+###### SampleApplication.kt ######
+```kotlin
+class SampleApplicationKt : Application() {
 
-```groovy
-compile 'com.kirich1409:strict-mode-compat:28.1.0'
+    override fun onCreate() {
+        super.onCreate()
+        initStrictMode(enable = BuildConfig.DEVELOPER_MODE, enableDefaults = false) {
+            threadPolicy {
+                resourceMismatches = true
+                customSlowCalls = true
+                unbufferedIo = true
+
+                penalty {
+                    log = true
+                }
+            }
+
+            vmPolicy {
+                fileUriExposure = true
+                leakedRegistrationObjects = true
+                cleartextNetwork = true
+                cleartextNetwork = true
+                untaggedSockets = true
+                contentUriWithoutPermission = true
+
+                penalty {
+                    log = true
+                }
+            }
+        }
+    }
+}
 ```
-
-Kotlin Extensions
------------------
-
-For project that using Kotlin you can add
-
-```groovy
-compile 'com.kirich1409:strict-mode-compat-kotlin:28.1.0'
-```
-
-instead of dependency described in [Download](#Download)
 
 License
 -------
