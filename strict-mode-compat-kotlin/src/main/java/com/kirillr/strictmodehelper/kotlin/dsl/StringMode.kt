@@ -4,11 +4,13 @@ import android.os.StrictMode
 import com.kirillr.strictmodehelper.StrictModeCompat
 
 @Suppress("unused")
-fun initStrictMode(enableDefaults: Boolean = true, config: (StrictModeConfig.() -> Unit)) {
-    StrictModeConfig(enableDefaults).apply {
-        config()
-        buildThreadPolicy(threadPolicyConfig)?.let(StrictMode::setThreadPolicy)
-        buildVmPolicy(vmPolicyConfig)?.let(StrictMode::setVmPolicy)
+fun initStrictMode(enable: Boolean = true, enableDefaults: Boolean = true, config: (StrictModeConfig.() -> Unit)) {
+    if (enable) {
+        StrictModeConfig(enableDefaults).apply {
+            config()
+            buildThreadPolicy(threadPolicyConfig)?.let(StrictMode::setThreadPolicy)
+            buildVmPolicy(vmPolicyConfig)?.let(StrictMode::setVmPolicy)
+        }
     }
 }
 
