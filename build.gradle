@@ -25,7 +25,7 @@ ext {
     targetSdkVersion = 27
     buildToolsVersion = '28.0.3'
 
-    versionName = '28.1.0'
+    versionName = '28.1.1'
     versionCode = versionName.split("\\.").collect { String.format("%02d", it.toInteger()) }.join().toInteger()
 }
 
