@@ -1,6 +1,10 @@
 Change Log
 ==========
 
+Version 29.0.0-beta1 (2019-01-17)
+---------------------------------
+Update to Android Q Beta 1 SDK (Level 29)
+
 Version 28.0.0 (2018-06-13)
 ---------------------------
 Update to Android P SDK (Level 28)

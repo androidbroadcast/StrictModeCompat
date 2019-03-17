@@ -4,7 +4,11 @@ import android.os.StrictMode
 import com.kirillr.strictmodehelper.StrictModeCompat
 
 @Suppress("unused")
-fun initStrictMode(enable: Boolean = true, enableDefaults: Boolean = true, config: (StrictModeConfig.() -> Unit)) {
+fun initStrictMode(
+    enable: Boolean = true,
+    enableDefaults: Boolean = true,
+    config: (StrictModeConfig.() -> Unit)
+) {
     if (enable) {
         StrictModeConfig(enableDefaults).apply {
             config()
@@ -91,9 +95,19 @@ private fun buildVmPolicy(config: VmPolicyConfig?): StrictMode.VmPolicy? {
     if (config.untaggedSockets) {
         vmPolicyBuilder.detectUntaggedSockets()
     }
+    if (config.credentialProtectedWhileLocked) {
+        vmPolicyBuilder.detectCredentialProtectedWhileLocked()
+    }
+    if (config.implicitDirectBoot) {
+        vmPolicyBuilder.detectImplicitDirectBoot()
+    }
 
-    config.classesInstanceLimit.toMap().forEach { (clazz, limit) ->
-        vmPolicyBuilder.setClassInstanceLimit(clazz.java, limit)
+    config.classesInstanceLimit.apply {
+        if (isNotEmpty()) {
+            toMap().forEach { (clazz, limit) ->
+                vmPolicyBuilder.setClassInstanceLimit(clazz.java, limit)
+            }
+        }
     }
 
     config.penaltyConfig.let { penaltyConfig ->

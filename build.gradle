@@ -9,7 +9,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.4.0-rc01'
+        classpath 'com.android.tools.build:gradle:3.4.0-rc02'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
@@ -17,7 +17,13 @@ buildscript {
 }
 
 def getVersionCode(String versionName) {
-    return versionName.split("\\.").collect { String.format("%02d", it.toInteger()) }.join().toInteger()
+    def postfixIndex = versionName.lastIndexOf("-")
+    if (postfixIndex >= 0) {
+        versionName = versionName.substring(0, postfixIndex)
+    }
+    return versionName.split("\\.").collect {
+        String.format("%02d", it.toInteger())
+    }.join().toInteger()
 }
 
 ext {
@@ -25,13 +31,13 @@ ext {
     androidXAppCompatVersion = '1.0.2'
 
     minSdkVersion = 14
-    compileSdkVersion = 28
-    targetSdkVersion = 27
-    buildToolsVersion = '28.0.3'
+    compileSdkVersion = "android-Q"
+    targetSdkVersion = "Q"
+    buildToolsVersion = "29.0.0 rc1"
 
-    strictModeCompatVersionName = '28.1.0'
+    strictModeCompatVersionName = '29.0.0-beta1'
     versionName = strictModeCompatVersionName
-    strictModeCompatKotlinVersionName = '28.1.2'
+    strictModeCompatKotlinVersionName = '29.0.0-beta1'
 }
 
 group = 'by.kirich1409'

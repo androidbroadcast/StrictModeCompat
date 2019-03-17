@@ -7,13 +7,17 @@ class VmPolicyConfig internal constructor(enableDefaults: Boolean) {
 
     var activityLeaks = if (enableDefaults) DEFAULT_ACTIVITY_LEAKS else false
     var cleartextNetwork = if (enableDefaults) DEFAULT_CLEARTEXT_NETWORK else false
-    var contentUriWithoutPermission = if (enableDefaults) DEFAULT_CONTENT_URI_WITHOUT_PERMISSION else false
+    var contentUriWithoutPermission =
+        if (enableDefaults) DEFAULT_CONTENT_URI_WITHOUT_PERMISSION else false
     var fileUriExposure = if (enableDefaults) DEFAULT_FILE_URI_EXPOSURE else false
     var leakedClosableObjects = if (enableDefaults) DEFAULT_LEAKED_CLOSABLE_OBJECTS else false
     var leakedRegistrationObjects = if (enableDefaults) DEFAULT_LEAKED_REGISTRATION_OBJECTS else false
     var leakedSqlLiteObjects = if (enableDefaults) DEFAULT_LEAKED_SQL_LITE_OBJECTS else false
     var nonSdkApiUsage = if (enableDefaults) DEFAULT_NON_SDK_API_USAGE else false
     var untaggedSockets = if (enableDefaults) DEFAULT_UNTAGGED_SOCKETS else false
+    var implicitDirectBoot = if (enableDefaults) DEFAULT_IMPLICIT_DIRECT_BOOT else false
+    var credentialProtectedWhileLocked =
+        if (enableDefaults) DEFAULT_CREDENTIAL_PROTECTED_WHILE_LOCKED else false
 
     var classesInstanceLimit = mapOf<KClass<*>, Int>()
 
@@ -35,6 +39,8 @@ class VmPolicyConfig internal constructor(enableDefaults: Boolean) {
         private const val DEFAULT_LEAKED_SQL_LITE_OBJECTS = true
         private const val DEFAULT_NON_SDK_API_USAGE = true
         private const val DEFAULT_UNTAGGED_SOCKETS = true
+        private const val DEFAULT_IMPLICIT_DIRECT_BOOT = true
+        private const val DEFAULT_CREDENTIAL_PROTECTED_WHILE_LOCKED = true
     }
 
     class PenaltyConfig private constructor(
