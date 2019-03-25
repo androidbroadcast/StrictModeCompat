@@ -4,19 +4,25 @@ import android.os.StrictMode
 import com.kirillr.strictmodehelper.StrictModeCompat
 
 @Suppress("unused")
-fun initStrictMode(enable: Boolean = true, enableDefaults: Boolean = true, config: (StrictModeConfig.() -> Unit)) {
-    if (enable) {
-        StrictModeConfig(enableDefaults).apply {
-            config()
-            buildThreadPolicy(threadPolicyConfig)?.let(StrictMode::setThreadPolicy)
-            buildVmPolicy(vmPolicyConfig)?.let(StrictMode::setVmPolicy)
-        }
+fun initStrictMode(
+    enable: Boolean = true,
+    enableDefaults: Boolean = true,
+    config: (StrictModeConfig.() -> Unit)
+) {
+    if (!enable) return
+
+    StrictModeConfig(enableDefaults).apply {
+        config()
+        StrictMode.setThreadPolicy(
+            buildThreadPolicy(threadPolicyConfig ?: ThreadPolicyConfig(enableDefaults))
+        )
+        StrictMode.setVmPolicy(
+            buildVmPolicy(vmPolicyConfig ?: VmPolicyConfig(enableDefaults))
+        )
     }
 }
 
-private fun buildThreadPolicy(config: ThreadPolicyConfig?): StrictMode.ThreadPolicy? {
-    config ?: return null
-
+private fun buildThreadPolicy(config: ThreadPolicyConfig): StrictMode.ThreadPolicy {
     val threadPolicyBuilder = StrictModeCompat.ThreadPolicy.Builder()
     if (config.customSlowCalls) {
         threadPolicyBuilder.detectCustomSlowCalls()
@@ -60,9 +66,7 @@ private fun buildThreadPolicy(config: ThreadPolicyConfig?): StrictMode.ThreadPol
     return threadPolicyBuilder.build()
 }
 
-private fun buildVmPolicy(config: VmPolicyConfig?): StrictMode.VmPolicy? {
-    config ?: return null
-
+private fun buildVmPolicy(config: VmPolicyConfig): StrictMode.VmPolicy {
     val vmPolicyBuilder = StrictModeCompat.VmPolicy.Builder()
     if (config.activityLeaks) {
         vmPolicyBuilder.detectActivityLeaks()

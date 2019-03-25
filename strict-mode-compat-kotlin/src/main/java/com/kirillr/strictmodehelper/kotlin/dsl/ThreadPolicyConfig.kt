@@ -1,23 +1,49 @@
 package com.kirillr.strictmodehelper.kotlin.dsl
 
 @ThreadPolicyDsl
-class ThreadPolicyConfig internal constructor(enableDefaults: Boolean) {
+class ThreadPolicyConfig private constructor(
+    var customSlowCalls: Boolean,
+    var diskReads: Boolean,
+    var diskWrites: Boolean,
+    var network: Boolean,
+    var resourceMismatches: Boolean,
+    var unbufferedIo: Boolean,
+    internal val penaltyConfig: PenaltyConfig
+) {
 
-    var customSlowCalls = if (enableDefaults) DEFAULT_CUSTOM_SLOW_CALLS else false
-    var diskReads = if (enableDefaults) DEFAULT_DISK_READS else false
-    var diskWrites = if (enableDefaults) DEFAULT_DISK_WRITES else false
-    var network = if (enableDefaults) DEFAULT_NETWORK else false
-    var resourceMismatches = if (enableDefaults) DEFAULT_RESOURCE_MISMATCHES else false
-    var unbufferedIo = if (enableDefaults) DEFAULT_UNBUFFERED_IO else false
-
-    internal var penaltyConfig = PenaltyConfig(enableDefaults)
-        private set
-
-    fun penalty(config: (@ThreadPolicyDsl PenaltyConfig.() -> Unit)) {
+    fun penalty(config: @ThreadPolicyDsl PenaltyConfig.() -> Unit) {
         this.penaltyConfig.apply(config)
     }
 
-    private companion object {
+    internal companion object {
+
+        internal operator fun invoke(enableDefaults: Boolean): ThreadPolicyConfig {
+            return if (enableDefaults) default() else disableAll()
+        }
+
+        private fun disableAll(): ThreadPolicyConfig {
+            return ThreadPolicyConfig(
+                customSlowCalls = false,
+                diskReads = false,
+                diskWrites = false,
+                network = false,
+                resourceMismatches = false,
+                unbufferedIo = false,
+                penaltyConfig = PenaltyConfig(false)
+            )
+        }
+
+        private fun default(): ThreadPolicyConfig {
+            return ThreadPolicyConfig(
+                customSlowCalls = DEFAULT_CUSTOM_SLOW_CALLS,
+                diskReads = DEFAULT_DISK_READS,
+                diskWrites = DEFAULT_DISK_WRITES,
+                network = DEFAULT_NETWORK,
+                resourceMismatches = DEFAULT_RESOURCE_MISMATCHES,
+                unbufferedIo = DEFAULT_UNBUFFERED_IO,
+                penaltyConfig = PenaltyConfig(true)
+            )
+        }
 
         private const val DEFAULT_CUSTOM_SLOW_CALLS = true
         private const val DEFAULT_DISK_READS = true

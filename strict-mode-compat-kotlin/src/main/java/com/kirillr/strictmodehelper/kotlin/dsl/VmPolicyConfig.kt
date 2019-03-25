@@ -3,28 +3,60 @@ package com.kirillr.strictmodehelper.kotlin.dsl
 import kotlin.reflect.KClass
 
 @VmPolicyDsl
-class VmPolicyConfig internal constructor(enableDefaults: Boolean) {
-
-    var activityLeaks = if (enableDefaults) DEFAULT_ACTIVITY_LEAKS else false
-    var cleartextNetwork = if (enableDefaults) DEFAULT_CLEARTEXT_NETWORK else false
-    var contentUriWithoutPermission = if (enableDefaults) DEFAULT_CONTENT_URI_WITHOUT_PERMISSION else false
-    var fileUriExposure = if (enableDefaults) DEFAULT_FILE_URI_EXPOSURE else false
-    var leakedClosableObjects = if (enableDefaults) DEFAULT_LEAKED_CLOSABLE_OBJECTS else false
-    var leakedRegistrationObjects = if (enableDefaults) DEFAULT_LEAKED_REGISTRATION_OBJECTS else false
-    var leakedSqlLiteObjects = if (enableDefaults) DEFAULT_LEAKED_SQL_LITE_OBJECTS else false
-    var nonSdkApiUsage = if (enableDefaults) DEFAULT_NON_SDK_API_USAGE else false
-    var untaggedSockets = if (enableDefaults) DEFAULT_UNTAGGED_SOCKETS else false
+class VmPolicyConfig private constructor(
+    var activityLeaks: Boolean,
+    var cleartextNetwork: Boolean,
+    var contentUriWithoutPermission: Boolean,
+    var fileUriExposure: Boolean,
+    var leakedClosableObjects: Boolean,
+    var leakedRegistrationObjects: Boolean,
+    var leakedSqlLiteObjects: Boolean,
+    var nonSdkApiUsage: Boolean,
+    var untaggedSockets: Boolean,
+    internal val penaltyConfig: PenaltyConfig
+) {
 
     var classesInstanceLimit = mapOf<KClass<*>, Int>()
-
-    internal var penaltyConfig = PenaltyConfig(enableDefaults)
-        private set
 
     fun penalty(config: (@VmPolicyDsl PenaltyConfig.() -> Unit)) {
         this.penaltyConfig.apply(config)
     }
 
-    private companion object {
+    internal companion object {
+
+        internal operator fun invoke(enableDefaults: Boolean): VmPolicyConfig {
+            return if (enableDefaults) default() else disableAll()
+        }
+
+        private fun disableAll(): VmPolicyConfig {
+            return VmPolicyConfig(
+                activityLeaks = false,
+                cleartextNetwork = false,
+                contentUriWithoutPermission = false,
+                fileUriExposure = false,
+                leakedClosableObjects = false,
+                leakedSqlLiteObjects = false,
+                leakedRegistrationObjects = false,
+                nonSdkApiUsage = false,
+                untaggedSockets = false,
+                penaltyConfig = PenaltyConfig(false)
+            )
+        }
+
+        private fun default(): VmPolicyConfig {
+            return VmPolicyConfig(
+                activityLeaks = DEFAULT_ACTIVITY_LEAKS,
+                cleartextNetwork = DEFAULT_CLEARTEXT_NETWORK,
+                contentUriWithoutPermission = DEFAULT_CONTENT_URI_WITHOUT_PERMISSION,
+                fileUriExposure = DEFAULT_FILE_URI_EXPOSURE,
+                leakedClosableObjects = DEFAULT_LEAKED_CLOSABLE_OBJECTS,
+                leakedSqlLiteObjects = DEFAULT_LEAKED_SQL_LITE_OBJECTS,
+                leakedRegistrationObjects = DEFAULT_LEAKED_REGISTRATION_OBJECTS,
+                nonSdkApiUsage = DEFAULT_NON_SDK_API_USAGE,
+                untaggedSockets = DEFAULT_UNTAGGED_SOCKETS,
+                penaltyConfig = PenaltyConfig(true)
+            )
+        }
 
         private const val DEFAULT_ACTIVITY_LEAKS = true
         private const val DEFAULT_CLEARTEXT_NETWORK = true
