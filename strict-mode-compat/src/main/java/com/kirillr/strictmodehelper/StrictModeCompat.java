@@ -1,3 +1,19 @@
+/*
+ * Copyright 2017-2019 Kirill Rozov
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.kirillr.strictmodehelper;
 
 import android.annotation.TargetApi;
@@ -706,36 +722,54 @@ public final class StrictModeCompat {
             private final BuilderImpl mBuilder;
 
             public Builder() {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    mBuilder = new V29BuilderImpl();
+
+                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                     mBuilder = new V28BuilderImpl();
+
                 } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     mBuilder = new V26BuilderImpl();
+
                 } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     mBuilder = new V24BuilderImpl();
+
                 } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     mBuilder = new V23BuilderImpl();
+
                 } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
                     mBuilder = new V18BuilderImpl();
+
                 } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                     mBuilder = new V16BuilderImpl();
+
                 } else {
                     mBuilder = new BaseBuilderImpl();
                 }
             }
 
             public Builder(@NonNull StrictMode.VmPolicy policy) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                     mBuilder = new V28BuilderImpl(policy);
+
+                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    mBuilder = new V28BuilderImpl(policy);
+
                 } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     mBuilder = new V26BuilderImpl(policy);
+
                 } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     mBuilder = new V24BuilderImpl(policy);
+
                 } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     mBuilder = new V23BuilderImpl(policy);
+
                 } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
                     mBuilder = new V18BuilderImpl(policy);
+
                 } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                     mBuilder = new V16BuilderImpl(policy);
+
                 } else {
                     mBuilder = new BaseBuilderImpl(policy);
                 }
@@ -969,6 +1003,40 @@ public final class StrictModeCompat {
                 mBuilder.permitNonSdkApiUsage();
                 return this;
             }
+
+            /**
+             * Detect any implicit reliance on Direct Boot automatic filtering of
+             * {@link android.content.pm.PackageManager} values. Violations are only triggered
+             * when implicit calls are made while the user is locked.
+             * <p/>
+             * Apps becoming Direct Boot aware need to carefully inspect each query site
+             * and explicitly decide which combination of flags they want to use:
+             *
+             * <ul>
+             *  <li>PackageManager#MATCH_DIRECT_BOOT_AWARE</li>
+             *  <li>PackageManager#MATCH_DIRECT_BOOT_UNAWARE</li>
+             *  <li>PackageManager#MATCH_DIRECT_BOOT_AUTO</li>
+             * </ul>
+             */
+            public Builder detectImplicitDirectBoot() {
+                mBuilder.detectImplicitDirectBoot();
+                return this;
+            }
+
+            /**
+             * Detect access to filesystem paths stored in credential
+             * protected storage areas while the user is locked.
+             * <p/>
+             * When a user is locked, credential protected storage is unavailable,
+             * and files stored in these locations appear to not exist, which can result
+             * in subtle app bugs if they assume default behaviors or empty states.
+             * Instead, apps should store data needed while a user is locked
+             * under device protected storage areas.
+             */
+            public Builder detectCredentialProtectedWhileLocked() {
+                mBuilder.detectCredentialProtectedWhileLocked();
+                return this;
+            }
         }
 
         private interface BuilderImpl {
@@ -1022,6 +1090,12 @@ public final class StrictModeCompat {
 
             // Min SDK 28
             void permitNonSdkApiUsage();
+
+            // Min SDK 29
+            void detectImplicitDirectBoot();
+
+            // Min SDK 29
+            void detectCredentialProtectedWhileLocked();
         }
 
         private static class BaseBuilderImpl implements BuilderImpl {
@@ -1132,6 +1206,16 @@ public final class StrictModeCompat {
             @Override
             public void permitNonSdkApiUsage() {
                 logUnsupportedFeature(CATEGORY, "Non SDK api usage");
+            }
+
+            @Override
+            public void detectImplicitDirectBoot() {
+                logUnsupportedFeature(CATEGORY, "Implicit Direct Boot");
+            }
+
+            @Override
+            public void detectCredentialProtectedWhileLocked() {
+                logUnsupportedFeature(CATEGORY, "Credential Protected While Locked");
             }
         }
 
@@ -1261,6 +1345,27 @@ public final class StrictModeCompat {
                             }
                         }
                 );
+            }
+        }
+
+        @TargetApi(Build.VERSION_CODES.Q)
+        private static class V29BuilderImpl extends V26BuilderImpl {
+
+            V29BuilderImpl() {
+            }
+
+            V29BuilderImpl(@NonNull StrictMode.VmPolicy policy) {
+                super(policy);
+            }
+
+            @Override
+            public void detectImplicitDirectBoot() {
+                builder.detectImplicitDirectBoot();
+            }
+
+            @Override
+            public void detectCredentialProtectedWhileLocked() {
+                builder.detectCredentialProtectedWhileLocked();
             }
         }
     }

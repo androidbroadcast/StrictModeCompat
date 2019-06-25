@@ -13,6 +13,8 @@ class VmPolicyConfig private constructor(
     var leakedSqlLiteObjects: Boolean,
     var nonSdkApiUsage: Boolean,
     var untaggedSockets: Boolean,
+    var implicitDirectBoot: Boolean,
+    var credentialProtectedWhileLocked: Boolean,
     internal val penaltyConfig: PenaltyConfig
 ) {
 
@@ -39,6 +41,8 @@ class VmPolicyConfig private constructor(
                 leakedRegistrationObjects = false,
                 nonSdkApiUsage = false,
                 untaggedSockets = false,
+                implicitDirectBoot = false,
+                credentialProtectedWhileLocked = false,
                 penaltyConfig = PenaltyConfig(false)
             )
         }
@@ -54,6 +58,8 @@ class VmPolicyConfig private constructor(
                 leakedRegistrationObjects = DEFAULT_LEAKED_REGISTRATION_OBJECTS,
                 nonSdkApiUsage = DEFAULT_NON_SDK_API_USAGE,
                 untaggedSockets = DEFAULT_UNTAGGED_SOCKETS,
+                implicitDirectBoot = DEFAULT_IMPLICIT_DIRECT_BOOT,
+                credentialProtectedWhileLocked = DEFAULT_CREDENTIAL_PROTECTED_WHILE_LOCKED,
                 penaltyConfig = PenaltyConfig(true)
             )
         }
@@ -67,6 +73,8 @@ class VmPolicyConfig private constructor(
         private const val DEFAULT_LEAKED_SQL_LITE_OBJECTS = true
         private const val DEFAULT_NON_SDK_API_USAGE = true
         private const val DEFAULT_UNTAGGED_SOCKETS = true
+        private const val DEFAULT_IMPLICIT_DIRECT_BOOT = true
+        private const val DEFAULT_CREDENTIAL_PROTECTED_WHILE_LOCKED = true
     }
 
     class PenaltyConfig private constructor(
