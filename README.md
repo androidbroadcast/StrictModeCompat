@@ -9,14 +9,14 @@ You must apply version of library for you project base on compileSdkVersion:
 
 ```groovy
 android {
-    compileSdkVersion 29 // 29 is required minimum
+    compileSdkVersion 30 // 30 is required minimum
 }
 
 dependencies {    
-    implementation "com.kirich1409:strict-mode-compat:29.0.0"
+    implementation "com.kirich1409:strict-mode-compat:30.0.0"
 
     // Kotlin Extensions
-    implementation "com.kirich1409:strict-mode-compat-kotlin:29.0.0"
+    implementation "com.kirich1409:strict-mode-compat-kotlin:30.0.0"
 }
 ```
 

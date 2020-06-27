@@ -1,6 +1,10 @@
 Change Log
 ==========
 
+Version 30.0.0 (2020-06-27)
+---------------------------------
+Add support Android 11 Stable SDK (Level 30)
+
 Version 29.0.0 (2019-06-25)
 ---------------------------------
 Update to Android Q Stable SDK (Level 29)
