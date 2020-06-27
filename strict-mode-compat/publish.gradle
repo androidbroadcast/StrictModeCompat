@@ -17,38 +17,59 @@
 group = 'com.kirich1409'
 version = rootProject.ext.strictModeCompatVersionName
 
-apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
+apply plugin: 'maven-publish'
 
 def siteUrl = 'https://github.com/kirich1409/StrictModeCompat'
 def gitRepoUrl = 'https://github.com/kirich1409/StrictModeCompat.git'
 
-def sourcesJar = tasks.register("sourcesJar", Jar) {
-    archiveClassifier.set('sources')
+tasks.register('sourceJar', Jar) {
     from android.sourceSets.main.java.srcDirs
+    classifier "sources"
 }
 
-def javadoc = tasks.register("javadoc", Javadoc) {
-    source = android.sourceSets.main.java.srcDirs
-    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-}
+afterEvaluate {
+    publishing {
+        publications {
+            releaseAar(MavenPublication) {
+                from components.release
+                artifact(sourceJar)
 
-def javadocJar = tasks.register("javadocJar", Jar) {
-    dependsOn javadoc
-    archiveClassifier.set('javadoc')
-    from javadoc.get().destinationDir
-}
+                groupId = 'com.kirich1409'
+                artifactId = 'strict-mode-compat'
+                version = rootProject.ext.versionName
 
-artifacts {
-    archives sourcesJar
-//    archives javadocJar
+                pom {
+                    name = 'Strict Mode Compat'
+                    description = 'Android Strict Mode Compat Library'
+                    url = siteUrl
+                    licenses {
+                        license {
+                            name = 'The Apache License, Version 2.0'
+                            url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = 'kirich1409'
+                            name = 'Kirill Rozov'
+                            email = 'krl.rozov@gmail.com'
+                        }
+                    }
+                    scm {
+                        url = gitRepoUrl
+                    }
+                }
+            }
+        }
+    }
 }
 
 bintray {
     user = project.hasProperty('user') ? project.property('user') : System.getenv('BINTRAY_USER')
     key = project.hasProperty('apiKey') ? project.property('apiKey') : System.getenv('BINTRAY_API_KEY')
 
-    configurations = ['archives']
+    publications = ["releaseAar"]
 
     pkg {
         repo = 'maven'
@@ -73,32 +94,3 @@ bintray {
     }
 }
 
-install {
-    repositories.mavenInstaller {
-        pom {
-            project {
-                packaging 'aar'
-                name 'Android Strict Mode Compat Library'
-                url siteUrl
-                licenses {
-                    license {
-                        name 'The Apache Software License, Version 2.0'
-                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                    }
-                }
-                developers {
-                    developer {
-                        id 'kirich1409'
-                        name 'Kirill Rozov'
-                        email 'krl.rozov@gmail.com'
-                    }
-                }
-                scm {
-                    connection gitRepoUrl
-                    developerConnection gitRepoUrl
-                    url siteUrl
-                }
-            }
-        }
-    }
-}
