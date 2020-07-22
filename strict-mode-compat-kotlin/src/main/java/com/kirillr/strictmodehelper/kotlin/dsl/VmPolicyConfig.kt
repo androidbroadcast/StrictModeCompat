@@ -91,7 +91,7 @@ class VmPolicyConfig private constructor(
         internal var onViolationExecutor: Executor? = null
 
         fun onViolation(executor: Executor, body: (violation: Violation) -> Unit) {
-            onViolationExecutor = null
+            onViolationExecutor = executor
             this.onViolation = body
         }
 
