@@ -750,7 +750,7 @@ public final class StrictModeCompat {
 
             public Builder(@NonNull StrictMode.VmPolicy policy) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    mBuilder = new V28BuilderImpl(policy);
+                    mBuilder = new V29BuilderImpl(policy);
 
                 } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                     mBuilder = new V28BuilderImpl(policy);
