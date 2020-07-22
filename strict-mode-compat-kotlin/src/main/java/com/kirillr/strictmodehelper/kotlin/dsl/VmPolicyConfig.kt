@@ -1,5 +1,7 @@
 package com.kirillr.strictmodehelper.kotlin.dsl
 
+import android.os.strictmode.Violation
+import java.util.concurrent.Executor
 import kotlin.reflect.KClass
 
 @VmPolicyDsl
@@ -84,6 +86,14 @@ class VmPolicyConfig private constructor(
         var dropBox: Boolean,
         var log: Boolean
     ) {
+
+        internal var onViolation: ((violation: Violation) -> Unit)? = null
+        internal var onViolationExecutor: Executor? = null
+
+        fun onViolation(executor: Executor, body: (violation: Violation) -> Unit) {
+            onViolationExecutor = null
+            this.onViolation = body
+        }
 
         internal companion object {
 

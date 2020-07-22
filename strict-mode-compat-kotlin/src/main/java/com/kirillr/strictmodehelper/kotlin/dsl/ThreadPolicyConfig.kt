@@ -16,6 +16,9 @@
 
 package com.kirillr.strictmodehelper.kotlin.dsl
 
+import android.os.strictmode.Violation
+import java.util.concurrent.Executor
+
 @ThreadPolicyDsl
 class ThreadPolicyConfig private constructor(
     var customSlowCalls: Boolean,
@@ -77,6 +80,14 @@ class ThreadPolicyConfig private constructor(
         var flashScreen: Boolean,
         var log: Boolean
     ) {
+
+        internal var onViolation: ((violation: Violation) -> Unit)? = null
+        internal var onViolationExecutor: Executor? = null
+
+        fun onViolation(executor: Executor, body: (violation: Violation) -> Unit) {
+            onViolationExecutor = null
+            this.onViolation = body
+        }
 
         internal companion object {
 

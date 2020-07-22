@@ -17,6 +17,7 @@
 package com.kirillr.strictmodehelper.kotlin.dsl
 
 import android.os.StrictMode
+import android.os.strictmode.Violation
 import com.kirillr.strictmodehelper.StrictModeCompat
 
 @Suppress("unused")
@@ -77,6 +78,12 @@ private fun buildThreadPolicy(config: ThreadPolicyConfig): StrictMode.ThreadPoli
         }
         if (penaltyConfig.log) {
             threadPolicyBuilder.penaltyLog()
+        }
+
+        val onViolation = penaltyConfig.onViolation
+        if (onViolation != null) {
+            threadPolicyBuilder.penaltyListener(checkNotNull(penaltyConfig.onViolationExecutor),
+                StrictModeCompat.OnThreadViolationListener { violation -> onViolation(violation) })
         }
     }
     return threadPolicyBuilder.build()
@@ -141,6 +148,12 @@ private fun buildVmPolicy(config: VmPolicyConfig): StrictMode.VmPolicy {
         }
         if (penaltyConfig.log) {
             vmPolicyBuilder.penaltyLog()
+        }
+
+        val onViolation = penaltyConfig.onViolation
+        if (onViolation != null) {
+            vmPolicyBuilder.penaltyListener(checkNotNull(penaltyConfig.onViolationExecutor),
+                StrictModeCompat.OnVmViolationListener { violation -> onViolation(violation) })
         }
     }
 
