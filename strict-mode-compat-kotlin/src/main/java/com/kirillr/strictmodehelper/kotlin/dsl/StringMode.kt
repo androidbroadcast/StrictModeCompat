@@ -27,133 +27,72 @@ fun initStrictMode(
 ) {
     if (!enable) return
 
-    StrictModeConfig(enableDefaults).apply {
-        config()
-        StrictMode.setThreadPolicy(
-            buildThreadPolicy(threadPolicyConfig ?: ThreadPolicyConfig(enableDefaults))
-        )
-        StrictMode.setVmPolicy(
-            buildVmPolicy(vmPolicyConfig ?: VmPolicyConfig(enableDefaults))
-        )
+    with(StrictModeConfig(enableDefaults).apply(config)) {
+        threadPolicyConfig?.let(::buildThreadPolicy).let(StrictMode::setThreadPolicy)
+        vmPolicyConfig?.let(::buildVmPolicy).let(StrictMode::setVmPolicy)
     }
 }
 
 private fun buildThreadPolicy(config: ThreadPolicyConfig): StrictMode.ThreadPolicy {
-    val threadPolicyBuilder = StrictModeCompat.ThreadPolicy.Builder()
-    if (config.customSlowCalls) {
-        threadPolicyBuilder.detectCustomSlowCalls()
-    }
-    if (config.diskReads) {
-        threadPolicyBuilder.detectDiskReads()
-    }
-    if (config.diskWrites) {
-        threadPolicyBuilder.detectDiskWrites()
-    }
-    if (config.network) {
-        threadPolicyBuilder.detectNetwork()
-    }
-    if (config.resourceMismatches) {
-        threadPolicyBuilder.detectResourceMismatches()
-    }
-    if (config.unbufferedIo) {
-        threadPolicyBuilder.detectUnbufferedIo()
-    }
-
-    config.penaltyConfig.let { penaltyConfig ->
-        if (penaltyConfig.death) {
-            threadPolicyBuilder.penaltyDeath()
-        }
-        if (penaltyConfig.deathOnNetwork) {
-            threadPolicyBuilder.penaltyDeathOnNetwork()
-        }
-        if (penaltyConfig.dialog) {
-            threadPolicyBuilder.penaltyDialog()
-        }
-        if (penaltyConfig.dropBox) {
-            threadPolicyBuilder.penaltyDropBox()
-        }
-        if (penaltyConfig.flashScreen) {
-            threadPolicyBuilder.penaltyFlashScreen()
-        }
-        if (penaltyConfig.log) {
-            threadPolicyBuilder.penaltyLog()
+    return StrictModeCompat.ThreadPolicy.Builder().apply {
+        with(config) {
+            if (customSlowCalls) detectCustomSlowCalls()
+            if (diskReads) detectDiskReads()
+            if (diskWrites) detectDiskWrites()
+            if (network) detectNetwork()
+            if (resourceMismatches) detectResourceMismatches()
+            if (unbufferedIo) detectUnbufferedIo()
         }
 
-        val onViolation = penaltyConfig.onViolation
-        if (onViolation != null) {
-            threadPolicyBuilder.penaltyListener(checkNotNull(penaltyConfig.onViolationExecutor),
-                StrictModeCompat.OnThreadViolationListener { violation -> onViolation(violation) })
+        with(config.penaltyConfig) {
+            if (death) penaltyDeath()
+            if (deathOnNetwork) penaltyDeathOnNetwork()
+            if (dialog) penaltyDialog()
+            if (dropBox) penaltyDropBox()
+            if (flashScreen) penaltyFlashScreen()
+            if (log) penaltyLog()
+
+            onViolation?.let { onViolation ->
+                penaltyListener(checkNotNull(onViolationExecutor), onViolation)
+            }
         }
-    }
-    return threadPolicyBuilder.build()
+    }.build()
 }
 
 private fun buildVmPolicy(config: VmPolicyConfig): StrictMode.VmPolicy {
-    val vmPolicyBuilder = StrictModeCompat.VmPolicy.Builder()
-    if (config.activityLeaks) {
-        vmPolicyBuilder.detectActivityLeaks()
-    }
-    if (config.cleartextNetwork) {
-        vmPolicyBuilder.detectCleartextNetwork()
-    }
-    if (config.contentUriWithoutPermission) {
-        vmPolicyBuilder.detectContentUriWithoutPermission()
-    }
-    if (config.fileUriExposure) {
-        vmPolicyBuilder.detectFileUriExposure()
-    }
-    if (config.leakedClosableObjects) {
-        vmPolicyBuilder.detectLeakedClosableObjects()
-    }
-    if (config.leakedRegistrationObjects) {
-        vmPolicyBuilder.detectLeakedRegistrationObjects()
-    }
-    if (config.leakedSqlLiteObjects) {
-        vmPolicyBuilder.detectLeakedSqlLiteObjects()
-    }
-    if (config.nonSdkApiUsage) {
-        vmPolicyBuilder.detectNonSdkApiUsage()
-    }
-    if (config.untaggedSockets) {
-        vmPolicyBuilder.detectUntaggedSockets()
-    }
-    if (config.credentialProtectedWhileLocked) {
-        vmPolicyBuilder.detectCredentialProtectedWhileLocked()
-    }
-    if (config.implicitDirectBoot) {
-        vmPolicyBuilder.detectImplicitDirectBoot()
-    }
+    return StrictModeCompat.VmPolicy.Builder().apply {
+        with(config) {
+            if (activityLeaks) detectActivityLeaks()
+            if (cleartextNetwork) detectCleartextNetwork()
+            if (contentUriWithoutPermission) detectContentUriWithoutPermission()
+            if (fileUriExposure) detectFileUriExposure()
+            if (leakedClosableObjects) detectLeakedClosableObjects()
+            if (leakedRegistrationObjects) detectLeakedRegistrationObjects()
+            if (leakedSqlLiteObjects) detectLeakedSqlLiteObjects()
+            if (nonSdkApiUsage) detectNonSdkApiUsage()
+            if (untaggedSockets) detectUntaggedSockets()
+            if (credentialProtectedWhileLocked) detectCredentialProtectedWhileLocked()
+            if (implicitDirectBoot) detectImplicitDirectBoot()
 
-    config.classesInstanceLimit.apply {
-        if (isNotEmpty()) {
-            toMap().forEach { (clazz, limit) ->
-                vmPolicyBuilder.setClassInstanceLimit(clazz.java, limit)
+            classesInstanceLimit.apply {
+                if (isNotEmpty()) {
+                    toMap().forEach { (clazz, limit) ->
+                        setClassInstanceLimit(clazz.java, limit)
+                    }
+                }
             }
         }
-    }
 
-    config.penaltyConfig.let { penaltyConfig ->
-        if (penaltyConfig.death) {
-            vmPolicyBuilder.penaltyDeath()
-        }
-        if (penaltyConfig.deathOnCleartextNetwork) {
-            vmPolicyBuilder.penaltyDeathOnCleartextNetwork()
-        }
-        if (penaltyConfig.deathOnFileUriExposure) {
-            vmPolicyBuilder.penaltyDeathOnFileUriExposure()
-        }
-        if (penaltyConfig.dropBox) {
-            vmPolicyBuilder.penaltyDropBox()
-        }
-        if (penaltyConfig.log) {
-            vmPolicyBuilder.penaltyLog()
-        }
+        with(config.penaltyConfig) {
+            if (death) penaltyDeath()
+            if (deathOnCleartextNetwork) penaltyDeathOnCleartextNetwork()
+            if (deathOnFileUriExposure) penaltyDeathOnFileUriExposure()
+            if (dropBox) penaltyDropBox()
+            if (log) penaltyLog()
 
-        val onViolation = penaltyConfig.onViolation
-        if (onViolation != null) {
-            vmPolicyBuilder.penaltyListener(checkNotNull(penaltyConfig.onViolationExecutor), onViolation)
+            onViolation?.let { onViolation ->
+                penaltyListener(checkNotNull(onViolationExecutor), onViolation)
+            }
         }
-    }
-
-    return vmPolicyBuilder.build()
+    }.build()
 }

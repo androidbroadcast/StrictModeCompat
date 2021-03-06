@@ -22,11 +22,18 @@ class StrictModeConfig internal constructor(private val enableDefaults: Boolean)
     internal var threadPolicyConfig: ThreadPolicyConfig? = null
     internal var vmPolicyConfig: VmPolicyConfig? = null
 
+    init {
+        if (enableDefaults) {
+            threadPolicyConfig = ThreadPolicyConfig(true)
+            vmPolicyConfig = VmPolicyConfig(true)
+        }
+    }
+
     fun threadPolicy(config: @StrictModeDsl ThreadPolicyConfig.() -> Unit) {
-        threadPolicyConfig = ThreadPolicyConfig(enableDefaults).apply(config)
+        threadPolicyConfig = (threadPolicyConfig ?: ThreadPolicyConfig(enableDefaults)).apply(config)
     }
 
     fun vmPolicy(config: @StrictModeDsl VmPolicyConfig.() -> Unit) {
-        vmPolicyConfig = VmPolicyConfig(enableDefaults).apply(config)
+        vmPolicyConfig = (vmPolicyConfig ?: VmPolicyConfig(enableDefaults)).apply(config)
     }
 }
