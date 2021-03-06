@@ -14,28 +14,11 @@
  * limitations under the License.
  */
 
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
+apply plugin: 'kotlin'
 
-android {
-    compileSdkVersion rootProject.ext.compileSdkVersion
-    buildToolsVersion rootProject.ext.buildToolsVersion
-
-    defaultConfig {
-        minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode getVersionCode(rootProject.ext.strictModeCompatKotlinVersionName)
-        versionName rootProject.ext.strictModeCompatKotlinVersionName
-    }
-}
-
-apply from: 'publish.gradle'
+//apply from: 'publish.gradle'
 
 dependencies {
     api project(":strict-mode-compat")
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-}
-
-tasks.withType(Class.forName("com.android.build.gradle.tasks.GenerateBuildConfig")) {
-    enabled = false
+    compileOnly androidJar
 }
