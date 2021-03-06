@@ -14,38 +14,16 @@
  * limitations under the License.
  */
 
-apply plugin: 'com.android.library'
-
-android {
-    compileSdkVersion rootProject.ext.compileSdkVersion
-    buildToolsVersion rootProject.ext.buildToolsVersion
-
-    defaultConfig {
-        minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode getVersionCode(rootProject.ext.strictModeCompatVersionName)
-        versionName rootProject.ext.strictModeCompatVersionName
-    }
-
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt')
-        }
-    }
-
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_7
-        targetCompatibility JavaVersion.VERSION_1_7
-    }
+plugins {
+    id 'java-library'
 }
 
-apply from: 'publish.gradle'
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_7
+    targetCompatibility = JavaVersion.VERSION_1_7
+}
 
 dependencies {
     implementation "androidx.annotation:annotation:$androidXAnnotationsVersion"
-}
-
-tasks.withType(Class.forName("com.android.build.gradle.tasks.GenerateBuildConfig")) {
-    enabled = false
+    compileOnly androidJar
 }
