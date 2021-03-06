@@ -1,7 +1,7 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-    ext.kotlin_version = '1.3.72'
+    ext.kotlin_version = '1.4.31'
 
     repositories {
         google()
@@ -17,6 +17,7 @@ buildscript {
 plugins {
     id 'maven-publish'
     id "com.jfrog.bintray" version "1.8.4"
+    id 'com.stepango.androidjar' version "0.1"
 }
 
 def getVersionCode(String versionName) {
@@ -36,7 +37,9 @@ ext {
     minSdkVersion = 14
     compileSdkVersion = 30
     targetSdkVersion = 29
-    buildToolsVersion = "30.0.0"
+    buildToolsVersion = "30.0.3"
+
+    androidJar = androidjar.find(compileSdkVersion)
 
     strictModeCompatVersionName = '30.1.1'
     versionName = strictModeCompatVersionName
