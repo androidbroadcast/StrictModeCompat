@@ -29,7 +29,6 @@ import android.os.Build;
 import android.os.DropBoxManager;
 import android.os.StrictMode;
 import android.os.strictmode.Violation;
-import android.util.Log;
 
 import java.io.Closeable;
 import java.util.Locale;
@@ -39,10 +38,8 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+@SuppressWarnings("ALL")
 public final class StrictModeCompat {
-
-    private final static String TAG = "StrictModeCompat";
-    private final static String FEATURE_NOT_SUPPORTED_MSG = "%s:%s is not supported";
 
     private StrictModeCompat() {
     }
@@ -198,11 +195,33 @@ public final class StrictModeCompat {
         setVmPolicy(vmPolicy);
     }
 
-    private static void logUnsupportedFeature(@NonNull String category, @NonNull String feature) {
-        Log.d(TAG, String.format(Locale.US, FEATURE_NOT_SUPPORTED_MSG, category, feature));
+    /**
+     * When {@link StrictMode.VmPolicy.Builder#penaltyListener(Executor, StrictMode.OnVmViolationListener)} is enabled,
+     * the listener is called on the provided executor when a VM violation occurs.
+     */
+    public interface OnVmViolationListener {
+
+        /**
+         * Called on a VM policy violation.
+         */
+        @TargetApi(Build.VERSION_CODES.O)
+        void onVmViolation(@NonNull Violation violation);
     }
 
-    public final static class ThreadPolicy {
+    /**
+     * When {@link StrictMode.ThreadPolicy.Builder#penaltyListener(Executor, StrictMode.OnThreadViolationListener)} is enabled,
+     * the listener is called on the provided executor when a Thread violation occurs.
+     */
+    public interface OnThreadViolationListener {
+
+        /**
+         * Called on a thread policy violation.
+         */
+        @TargetApi(Build.VERSION_CODES.O)
+        void onThreadViolation(@NonNull Violation violation);
+    }
+
+    public static final class ThreadPolicy {
 
         private ThreadPolicy() {
         }
@@ -210,7 +229,7 @@ public final class StrictModeCompat {
         public static final class Builder {
 
             @NonNull
-            private final ThreadPolicy.BuilderImpl mBuilder;
+            private final BuilderImpl mBuilder;
 
             public Builder() {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
@@ -220,7 +239,7 @@ public final class StrictModeCompat {
                 } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     mBuilder = new V23BuilderImpl();
                 } else {
-                    mBuilder = new BaseBuilderImpl();
+                    mBuilder = new V14BuilderImpl();
                 }
             }
 
@@ -232,7 +251,7 @@ public final class StrictModeCompat {
                 } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     mBuilder = new V23BuilderImpl(policy);
                 } else {
-                    mBuilder = new BaseBuilderImpl(policy);
+                    mBuilder = new V14BuilderImpl(policy);
                 }
             }
 
@@ -510,16 +529,16 @@ public final class StrictModeCompat {
             void penaltyListener(@NonNull Executor executor, @NonNull OnThreadViolationListener listener);
         }
 
-        private static class BaseBuilderImpl implements BuilderImpl {
+        private static class V14BuilderImpl implements BuilderImpl {
 
             @NonNull
             final StrictMode.ThreadPolicy.Builder builder;
 
-            BaseBuilderImpl() {
+            V14BuilderImpl() {
                 this.builder = new StrictMode.ThreadPolicy.Builder();
             }
 
-            BaseBuilderImpl(@NonNull StrictMode.ThreadPolicy policy) {
+            V14BuilderImpl(@NonNull StrictMode.ThreadPolicy policy) {
                 this.builder = new StrictMode.ThreadPolicy.Builder(policy);
             }
 
@@ -611,36 +630,36 @@ public final class StrictModeCompat {
             // Min sdk 23
             @Override
             public void detectResourceMismatches() {
-                logUnsupportedFeature(CATEGORY, "Resource mismatches");
+                Utils.logUnsupportedFeature(CATEGORY, "Resource mismatches");
             }
 
             // Min sdk 23
             @Override
             public void permitResourceMismatches() {
-                logUnsupportedFeature(CATEGORY, "Resource mismatches");
+                Utils.logUnsupportedFeature(CATEGORY, "Resource mismatches");
             }
 
             // Min sdk 26
             @Override
             public void detectUnbufferedIo() {
-                logUnsupportedFeature(CATEGORY, "Unbuffered IO");
+                Utils.logUnsupportedFeature(CATEGORY, "Unbuffered IO");
             }
 
             // Min sdk 26
             @Override
             public void permitUnbufferedIo() {
-                logUnsupportedFeature(CATEGORY, "Unbuffered IO");
+                Utils.logUnsupportedFeature(CATEGORY, "Unbuffered IO");
             }
 
             // Min sdk 28
             @Override
             public void penaltyListener(@NonNull Executor executor, @NonNull OnThreadViolationListener listener) {
-                logUnsupportedFeature(CATEGORY, "Penalty listener");
+                Utils.logUnsupportedFeature(CATEGORY, "Penalty listener");
             }
         }
 
         @TargetApi(Build.VERSION_CODES.M)
-        private static class V23BuilderImpl extends BaseBuilderImpl {
+        private static class V23BuilderImpl extends V14BuilderImpl {
 
             V23BuilderImpl() {
             }
@@ -700,9 +719,8 @@ public final class StrictModeCompat {
                         executor,
                         new StrictMode.OnThreadViolationListener() {
 
-                            @TargetApi(Build.VERSION_CODES.O)
                             @Override
-                            public void onThreadViolation(@NonNull Violation violation) {
+                            public void onThreadViolation(Violation violation) {
                                 listener.onThreadViolation(violation);
                             }
                         }
@@ -744,7 +762,7 @@ public final class StrictModeCompat {
                     mBuilder = new V16BuilderImpl();
 
                 } else {
-                    mBuilder = new BaseBuilderImpl();
+                    mBuilder = new V14BuilderImpl();
                 }
             }
 
@@ -771,7 +789,7 @@ public final class StrictModeCompat {
                     mBuilder = new V16BuilderImpl(policy);
 
                 } else {
-                    mBuilder = new BaseBuilderImpl(policy);
+                    mBuilder = new V14BuilderImpl(policy);
                 }
             }
 
@@ -1098,129 +1116,128 @@ public final class StrictModeCompat {
             void detectCredentialProtectedWhileLocked();
         }
 
-        private static class BaseBuilderImpl implements BuilderImpl {
+        private static class V14BuilderImpl implements BuilderImpl {
 
             @NonNull
-            final StrictMode.VmPolicy.Builder builder;
+            final StrictMode.VmPolicy.Builder mBuilder;
 
-            BaseBuilderImpl() {
-                builder = new StrictMode.VmPolicy.Builder();
+            V14BuilderImpl() {
+                mBuilder = new StrictMode.VmPolicy.Builder();
             }
 
-            BaseBuilderImpl(@NonNull StrictMode.VmPolicy policy) {
-                this.builder = new StrictMode.VmPolicy.Builder(policy);
+            V14BuilderImpl(@NonNull StrictMode.VmPolicy policy) {
+                mBuilder = new StrictMode.VmPolicy.Builder(policy);
             }
 
             @Override
             public StrictMode.VmPolicy build() {
-                return builder.build();
+                return mBuilder.build();
             }
 
             @Override
             public void detectAll() {
-                builder.detectAll();
+                mBuilder.detectAll();
             }
 
             @Override
             public void detectCleartextNetwork() {
-                logUnsupportedFeature(CATEGORY, "Cleartext network");
+                Utils.logUnsupportedFeature(CATEGORY, "Cleartext network");
             }
 
             @Override
             public void detectFileUriExposure() {
-                logUnsupportedFeature(CATEGORY, "File uri exposure");
+                Utils.logUnsupportedFeature(CATEGORY, "File uri exposure");
             }
 
             @Override
             public void detectLeakedSqlLiteObjects() {
-                builder.detectLeakedSqlLiteObjects();
+                mBuilder.detectLeakedSqlLiteObjects();
             }
 
             @Override
             public void detectLeakedRegistrationObjects() {
-                logUnsupportedFeature(CATEGORY, "Leaked registration objects");
+                Utils.logUnsupportedFeature(CATEGORY, "Leaked registration objects");
             }
 
             @Override
             public void penaltyDeath() {
-                builder.penaltyDeath();
+                mBuilder.penaltyDeath();
             }
 
             @Override
             public void penaltyDeathOnCleartextNetwork() {
-                logUnsupportedFeature(CATEGORY, "Cleartext network");
+                Utils.logUnsupportedFeature(CATEGORY, "Cleartext network");
             }
 
             @Override
             public void penaltyDeathOnFileUriExposure() {
-                logUnsupportedFeature(CATEGORY, "Penalty death on file uri exposure");
+                Utils.logUnsupportedFeature(CATEGORY, "Penalty death on file uri exposure");
             }
 
             @Override
             public void penaltyDropBox() {
-                builder.penaltyDropBox();
+                mBuilder.penaltyDropBox();
             }
 
             @Override
             public void penaltyLog() {
-                builder.penaltyLog();
+                mBuilder.penaltyLog();
             }
 
             @Override
             public void detectActivityLeaks() {
-                builder.detectActivityLeaks();
+                mBuilder.detectActivityLeaks();
             }
 
             @Override
             public void detectLeakedClosableObjects() {
-                builder.detectLeakedClosableObjects();
+                mBuilder.detectLeakedClosableObjects();
             }
 
             @Override
-            public void setClassInstanceLimit(@NonNull Class<?> klass,
-                                              @IntRange(from = 0) int instanceLimit) {
-                builder.setClassInstanceLimit(klass, instanceLimit);
+            public void setClassInstanceLimit(@NonNull Class<?> klass, @IntRange(from = 0) int instanceLimit) {
+                mBuilder.setClassInstanceLimit(klass, instanceLimit);
             }
 
             @Override
             public void detectContentUriWithoutPermission() {
-                logUnsupportedFeature(CATEGORY, "Content uri without permission");
+                Utils.logUnsupportedFeature(CATEGORY, "Content uri without permission");
             }
 
             @Override
             public void detectUntaggedSockets() {
-                logUnsupportedFeature(CATEGORY, "Untagged sockets");
+                Utils.logUnsupportedFeature(CATEGORY, "Untagged sockets");
             }
 
             @Override
             public void detectNonSdkApiUsage() {
-                logUnsupportedFeature(CATEGORY, "Non SDK api usage");
+                Utils.logUnsupportedFeature(CATEGORY, "Non SDK api usage");
             }
 
             @Override
             public void penaltyListener(@NonNull Executor executor,
                                         @NonNull OnVmViolationListener listener) {
-                logUnsupportedFeature(CATEGORY, "Penalty listener");
+                Utils.logUnsupportedFeature(CATEGORY, "Penalty listener");
             }
 
             @Override
             public void permitNonSdkApiUsage() {
-                logUnsupportedFeature(CATEGORY, "Non SDK api usage");
+                Utils.logUnsupportedFeature(CATEGORY, "Non SDK api usage");
             }
 
             @Override
             public void detectImplicitDirectBoot() {
-                logUnsupportedFeature(CATEGORY, "Implicit Direct Boot");
+                Utils.logUnsupportedFeature(CATEGORY, "Implicit Direct Boot");
             }
 
             @Override
             public void detectCredentialProtectedWhileLocked() {
-                logUnsupportedFeature(CATEGORY, "Credential Protected While Locked");
+                Utils.logUnsupportedFeature(CATEGORY, "Credential Protected While Locked");
             }
         }
 
         @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-        private static class V16BuilderImpl extends BaseBuilderImpl {
+        private static class V16BuilderImpl extends V14BuilderImpl {
 
             V16BuilderImpl() {
             }
@@ -1231,7 +1248,7 @@ public final class StrictModeCompat {
 
             @Override
             public void detectLeakedRegistrationObjects() {
-                builder.detectLeakedRegistrationObjects();
+                mBuilder.detectLeakedRegistrationObjects();
             }
         }
 
@@ -1247,7 +1264,7 @@ public final class StrictModeCompat {
 
             @Override
             public void detectFileUriExposure() {
-                builder.detectFileUriExposure();
+                mBuilder.detectFileUriExposure();
             }
         }
 
@@ -1263,12 +1280,12 @@ public final class StrictModeCompat {
 
             @Override
             public void detectCleartextNetwork() {
-                builder.detectCleartextNetwork();
+                mBuilder.detectCleartextNetwork();
             }
 
             @Override
             public void penaltyDeathOnCleartextNetwork() {
-                builder.penaltyDeathOnCleartextNetwork();
+                mBuilder.penaltyDeathOnCleartextNetwork();
             }
         }
 
@@ -1284,7 +1301,7 @@ public final class StrictModeCompat {
 
             @Override
             public void penaltyDeathOnFileUriExposure() {
-                builder.penaltyDeathOnFileUriExposure();
+                mBuilder.penaltyDeathOnFileUriExposure();
             }
         }
 
@@ -1300,12 +1317,12 @@ public final class StrictModeCompat {
 
             @Override
             public void detectUntaggedSockets() {
-                builder.detectUntaggedSockets();
+                mBuilder.detectUntaggedSockets();
             }
 
             @Override
             public void detectContentUriWithoutPermission() {
-                builder.detectContentUriWithoutPermission();
+                mBuilder.detectContentUriWithoutPermission();
             }
         }
 
@@ -1321,12 +1338,12 @@ public final class StrictModeCompat {
 
             @Override
             public void detectNonSdkApiUsage() {
-                builder.detectNonSdkApiUsage();
+                mBuilder.detectNonSdkApiUsage();
             }
 
             @Override
             public void permitNonSdkApiUsage() {
-                builder.permitNonSdkApiUsage();
+                mBuilder.permitNonSdkApiUsage();
             }
 
             @Override
@@ -1334,11 +1351,10 @@ public final class StrictModeCompat {
                     @NonNull Executor executor,
                     @NonNull final OnVmViolationListener listener
             ) {
-                builder.penaltyListener(
+                mBuilder.penaltyListener(
                         executor,
                         new StrictMode.OnVmViolationListener() {
 
-                            @TargetApi(Build.VERSION_CODES.O)
                             @Override
                             public void onVmViolation(Violation violation) {
                                 listener.onVmViolation(violation);
@@ -1360,39 +1376,13 @@ public final class StrictModeCompat {
 
             @Override
             public void detectImplicitDirectBoot() {
-                builder.detectImplicitDirectBoot();
+                mBuilder.detectImplicitDirectBoot();
             }
 
             @Override
             public void detectCredentialProtectedWhileLocked() {
-                builder.detectCredentialProtectedWhileLocked();
+                mBuilder.detectCredentialProtectedWhileLocked();
             }
         }
-    }
-
-    /**
-     * When {@link StrictMode.VmPolicy.Builder#penaltyListener(Executor, StrictMode.OnVmViolationListener)} is enabled,
-     * the listener is called on the provided executor when a VM violation occurs.
-     */
-    public interface OnVmViolationListener {
-
-        /**
-         * Called on a VM policy violation.
-         */
-        @TargetApi(Build.VERSION_CODES.O)
-        void onVmViolation(@NonNull Violation violation);
-    }
-
-    /**
-     * When {@link StrictMode.ThreadPolicy.Builder#penaltyListener(Executor, StrictMode.OnThreadViolationListener)} is enabled,
-     * the listener is called on the provided executor when a Thread violation occurs.
-     */
-    public interface OnThreadViolationListener {
-
-        /**
-         * Called on a thread policy violation.
-         */
-        @TargetApi(Build.VERSION_CODES.O)
-        void onThreadViolation(@NonNull Violation violation);
     }
 }
