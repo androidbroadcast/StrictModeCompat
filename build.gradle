@@ -30,7 +30,7 @@ ext {
 
     androidJar = androidjar.find(compileSdkVersion)
 
-    strictModeCompatVersionName = '30.1.1'
+    strictModeCompatVersionName = '30.2.0'
     versionName = strictModeCompatVersionName
     strictModeCompatKotlinVersionName = strictModeCompatVersionName
 }
