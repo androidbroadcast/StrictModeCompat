@@ -17,7 +17,6 @@
 package com.kirillr.strictmodehelper.kotlin.dsl
 
 import android.os.StrictMode
-import android.os.strictmode.Violation
 import com.kirillr.strictmodehelper.StrictModeCompat
 
 @Suppress("unused")
@@ -152,8 +151,7 @@ private fun buildVmPolicy(config: VmPolicyConfig): StrictMode.VmPolicy {
 
         val onViolation = penaltyConfig.onViolation
         if (onViolation != null) {
-            vmPolicyBuilder.penaltyListener(checkNotNull(penaltyConfig.onViolationExecutor),
-                StrictModeCompat.OnVmViolationListener { violation -> onViolation(violation) })
+            vmPolicyBuilder.penaltyListener(checkNotNull(penaltyConfig.onViolationExecutor), onViolation)
         }
     }
 

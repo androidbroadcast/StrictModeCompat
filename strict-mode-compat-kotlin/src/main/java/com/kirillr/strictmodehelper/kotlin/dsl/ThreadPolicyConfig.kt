@@ -14,19 +14,48 @@
  * limitations under the License.
  */
 
+@file:Suppress("unused")
+
 package com.kirillr.strictmodehelper.kotlin.dsl
 
 import android.os.strictmode.Violation
 import java.util.concurrent.Executor
+import android.os.DropBoxManager
+import android.os.StrictMode
+import android.os.Build
 
 @ThreadPolicyDsl
 class ThreadPolicyConfig private constructor(
+    /**
+     * Enable detection of slow calls.
+     */
     var customSlowCalls: Boolean,
+
+    /**
+     * Enable detection of disk reads.
+     */
     var diskReads: Boolean,
+
+    /**
+     * Enable detection of disk writes.
+     */
     var diskWrites: Boolean,
+
+    /**
+     * Enable detection of network operations.
+     */
     var network: Boolean,
+
+    /**
+     * Enables detection of mismatches between defined resource types and getter calls.
+     */
     var resourceMismatches: Boolean,
+
+    /**
+     * Detect unbuffered input/output operations.
+     */
     var unbufferedIo: Boolean,
+
     internal val penaltyConfig: PenaltyConfig
 ) {
 
@@ -73,17 +102,51 @@ class ThreadPolicyConfig private constructor(
     }
 
     class PenaltyConfig private constructor(
+        /**
+         * Crash the whole process on violation. This penalty runs at the end of all enabled penalties so you'll
+         * still get see logging or other violations before the process dies.
+         *
+         * Unlike [deathOnNetwork], this applies to disk reads, disk writes, and network usage if their
+         * corresponding detect flags are set.
+         */
         var death: Boolean,
+
+        /**
+         * Crash the whole process on any network usage. Unlike [death], this penalty runs
+         * *before* anything else. You must still have enable [network].
+         */
         var deathOnNetwork: Boolean,
+
+        /**
+         * Show an annoying dialog to the developer on detected violations, rate-limited to be only a little annoying.
+         */
         var dialog: Boolean,
+
+        /**
+         * Enable detected violations log a stacktrace and timing data to the [DropBox][DropBoxManager]
+         * on policy violation. Intended mostly for platform integrators doing beta user field data collection.
+         */
         var dropBox: Boolean,
+
+        /**
+         * Flash the screen during a violation.
+         */
         var flashScreen: Boolean,
+
+        /**
+         * Log detected violations to the system log.
+         */
         var log: Boolean
     ) {
 
         internal var onViolation: ((violation: Violation) -> Unit)? = null
         internal var onViolationExecutor: Executor? = null
 
+        /**
+         * Call [StrictMode.OnThreadViolationListener.onThreadViolation] on specified [executor] every violation.
+         *
+         * Work on [Build.VERSION_CODES.P] and newer.
+         */
         fun onViolation(executor: Executor, body: (violation: Violation) -> Unit) {
             onViolationExecutor = executor
             this.onViolation = body

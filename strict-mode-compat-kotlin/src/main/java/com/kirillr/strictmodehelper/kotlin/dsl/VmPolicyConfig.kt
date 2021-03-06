@@ -1,5 +1,9 @@
+@file:Suppress("unused")
+
 package com.kirillr.strictmodehelper.kotlin.dsl
 
+import android.os.Build
+import android.os.StrictMode
 import android.os.strictmode.Violation
 import java.util.concurrent.Executor
 import kotlin.reflect.KClass
@@ -90,6 +94,11 @@ class VmPolicyConfig private constructor(
         internal var onViolation: ((violation: Violation) -> Unit)? = null
         internal var onViolationExecutor: Executor? = null
 
+        /**
+         * Call [StrictMode.OnThreadViolationListener.onThreadViolation] on specified [executor] every violation.
+         *
+         * Work on [Build.VERSION_CODES.P] and newer.
+         */
         fun onViolation(executor: Executor, body: (violation: Violation) -> Unit) {
             onViolationExecutor = executor
             this.onViolation = body
