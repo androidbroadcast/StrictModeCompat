@@ -75,8 +75,8 @@ public final class StrictModeCompat {
 
     /**
      * Enable the recommended StrictMode defaults, with violations just being logged.
-     * <p/>
-     * <p/>This catches disk and network access on the main thread, as
+     * <p>
+     * <p>This catches disk and network access on the main thread, as
      * well as leaked SQLite cursors and unclosed resources.  This is
      * simply a wrapper around {@link #setVmPolicy} and {@link
      * #setThreadPolicy}.
@@ -158,8 +158,8 @@ public final class StrictModeCompat {
     /**
      * Sets the policy for what actions on the current thread should
      * be detected, as well as the penalty if such actions occur.
-     * <p/>
-     * <p/>Internally this sets a thread-local variable which is
+     * <p>
+     * <p>Internally this sets a thread-local variable which is
      * propagated across cross-process IPC calls, meaning you can
      * catch violations when a system service or another process
      * accesses the disk or network on your behalf.
@@ -854,7 +854,6 @@ public final class StrictModeCompat {
              * can extend temporary permission for the receiving app to access
              * the resource.
              *
-             * @see android.support.v4.content.FileProvider
              * @see Intent#FLAG_GRANT_READ_URI_PERMISSION
              */
             @SuppressWarnings("JavadocReference")
@@ -967,7 +966,7 @@ public final class StrictModeCompat {
             /**
              * Detect when the calling application sends a content:// Uri to another app
              * without setting {@link Intent#FLAG_GRANT_READ_URI_PERMISSION} or
-             * {@link Intent#FLAG_GRANT_WRITE_URI_PERMISSION}.<p/>
+             * {@link Intent#FLAG_GRANT_WRITE_URI_PERMISSION}.<p>
              * Forgetting to include one or more of these flags
              * when sending an intent is typically an app bug.
              */
@@ -981,7 +980,7 @@ public final class StrictModeCompat {
              * using {@link android.net.TrafficStats}.
              * Tagging sockets can help you investigate network usage inside your app,
              * such as a narrowing down heavy usage to a specific library or component.
-             * <p/>This currently does not detect sockets created in native code.
+             * <p>This currently does not detect sockets created in native code.
              */
             public Builder detectUntaggedSockets() {
                 mBuilder.detectUntaggedSockets();
@@ -990,7 +989,7 @@ public final class StrictModeCompat {
 
             /**
              * Detect reflective usage of APIs that are not part of the public Android SDK.
-             * <p/>
+             * <p>
              * Note that any non-SDK APIs that this processes accesses before this detection is enabled may not be detected.
              * To ensure that all such API accesses are detected, you should apply this policy as early as possible after process creation.
              */
@@ -1013,7 +1012,7 @@ public final class StrictModeCompat {
 
             /**
              * Permit reflective usage of APIs that are not part of the public Android SDK.
-             * <p/>
+             * <p>
              * Note that this only affects StrictMode, the underlying runtime may continue
              * to restrict or warn on access to methods that are not part of the public SDK.
              */
@@ -1026,7 +1025,7 @@ public final class StrictModeCompat {
              * Detect any implicit reliance on Direct Boot automatic filtering of
              * {@link android.content.pm.PackageManager} values. Violations are only triggered
              * when implicit calls are made while the user is locked.
-             * <p/>
+             * <p>
              * Apps becoming Direct Boot aware need to carefully inspect each query site
              * and explicitly decide which combination of flags they want to use:
              *
@@ -1044,7 +1043,7 @@ public final class StrictModeCompat {
             /**
              * Detect access to filesystem paths stored in credential
              * protected storage areas while the user is locked.
-             * <p/>
+             * <p>
              * When a user is locked, credential protected storage is unavailable,
              * and files stored in these locations appear to not exist, which can result
              * in subtle app bugs if they assume default behaviors or empty states.

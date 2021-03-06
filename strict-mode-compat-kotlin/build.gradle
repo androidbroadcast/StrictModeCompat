@@ -14,11 +14,20 @@
  * limitations under the License.
  */
 
-apply plugin: 'kotlin'
+plugins {
+    id 'java-library'
+    id 'kotlin'
+}
 
-//apply from: 'publish.gradle'
+ext.artifactId = 'strict-mode-compat-ktx'
+apply from: rootProject.file('publishing.gradle')
 
 dependencies {
     api project(":strict-mode-compat")
     compileOnly androidJar
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_7
+    targetCompatibility = JavaVersion.VERSION_1_7
 }

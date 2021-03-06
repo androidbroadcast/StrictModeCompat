@@ -16,18 +16,7 @@ buildscript {
 
 plugins {
     id 'maven-publish'
-    id "com.jfrog.bintray" version "1.8.4"
     id 'com.stepango.androidjar' version "0.1"
-}
-
-def getVersionCode(String versionName) {
-    def postfixIndex = versionName.lastIndexOf("-")
-    if (postfixIndex >= 0) {
-        versionName = versionName.substring(0, postfixIndex)
-    }
-    return versionName.split("\\.").collect {
-        String.format("%02d", it.toInteger())
-    }.join().toInteger()
 }
 
 ext {
@@ -46,7 +35,7 @@ ext {
     strictModeCompatKotlinVersionName = strictModeCompatVersionName
 }
 
-group = 'by.kirich1409'
+group = 'com.github.kirich1409'
 version = ext.versionName
 
 allprojects {

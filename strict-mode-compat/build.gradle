@@ -27,3 +27,6 @@ dependencies {
     implementation "androidx.annotation:annotation:$androidXAnnotationsVersion"
     compileOnly androidJar
 }
+
+ext.artifactId = 'strict-mode-compat'
+apply from: rootProject.file('publishing.gradle')
