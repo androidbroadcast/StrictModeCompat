@@ -38,8 +38,8 @@ public class SampleApplication extends Application {
                     .detectFileUriExposure()
                     .detectLeakedRegistrationObjects()
                     .detectCleartextNetwork()
-                    .detectUntaggedSockets() // Available only on Android 8.0+
-                    .detectContentUriWithoutPermission()  // Available only on Android 8.0+
+                    .detectUntaggedSockets() // Take effect only on Android 8.0+
+                    .detectContentUriWithoutPermission()  // Take effect only on Android 8.0+
                     .penaltyLog()
                     .build();
 
