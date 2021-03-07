@@ -12,10 +12,10 @@ android {
 }
 
 dependencies {    
-    implementation "com.kirich1409:strict-mode-compat:30.1.1"
+    implementation "com.kirich1409:strict-mode-compat:30.2.0"
 
     // Kotlin Extensions
-    implementation "com.kirich1409:strict-mode-compat-kotlin:30.1.1"
+    implementation "com.kirich1409:strict-mode-compat-kotlin:30.2.0"
 }
 ```
 
