@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+Version 30.2.0 (2021-03-07)
+---------------------------------
+- Minor improvements
+- Migration to Maven Central
+
 Version 30.0.0 (2020-06-27)
 ---------------------------------
 Add support Android 11 Stable SDK (Level 30)
