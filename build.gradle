@@ -5,7 +5,7 @@ buildscript {
 
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
 
     dependencies {
@@ -41,6 +41,6 @@ version = ext.versionName
 allprojects {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
 }
