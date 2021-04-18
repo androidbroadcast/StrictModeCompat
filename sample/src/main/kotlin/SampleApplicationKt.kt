@@ -29,12 +29,10 @@ class SampleApplicationKt : Application() {
                 resourceMismatches = true
                 customSlowCalls = true
                 unbufferedIo = true
+                diskWrites = true
 
                 penalty {
                     log = true
-                    threadPolicy {
-                        diskWrites = true
-                    }
                 }
             }
 
