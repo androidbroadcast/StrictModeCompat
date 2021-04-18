@@ -4,7 +4,10 @@ package com.kirillr.strictmodehelper.kotlin.dsl
 
 import android.os.Build
 import android.os.StrictMode
-import android.os.strictmode.Violation
+import com.kirillr.strictmodehelper.StrictModeCompat
+import com.kirillr.strictmodehelper.kotlin.dsl.StrictModeConfig.Defaults.ALL
+import com.kirillr.strictmodehelper.kotlin.dsl.StrictModeConfig.Defaults.DEFAULT
+import com.kirillr.strictmodehelper.kotlin.dsl.StrictModeConfig.Defaults.NONE
 import java.util.concurrent.Executor
 import kotlin.reflect.KClass
 
@@ -24,7 +27,7 @@ class VmPolicyConfig private constructor(
     internal val penaltyConfig: PenaltyConfig
 ) {
 
-    var classesInstanceLimit = mapOf<KClass<*>, Int>()
+    var classesInstanceLimit: Map<KClass<*>, Int> = emptyMap()
 
     fun penalty(config: (@VmPolicyDsl PenaltyConfig.() -> Unit)) {
         this.penaltyConfig.apply(config)
@@ -32,8 +35,12 @@ class VmPolicyConfig private constructor(
 
     internal companion object {
 
-        internal operator fun invoke(enableDefaults: Boolean): VmPolicyConfig {
-            return if (enableDefaults) default() else disableAll()
+        internal operator fun invoke(defaults: StrictModeConfig.Defaults): VmPolicyConfig {
+            return when (defaults) {
+                DEFAULT -> default()
+                ALL -> enableAll()
+                NONE -> disableAll()
+            }
         }
 
         private fun disableAll(): VmPolicyConfig {
@@ -70,6 +77,23 @@ class VmPolicyConfig private constructor(
             )
         }
 
+        private fun enableAll(): VmPolicyConfig {
+            return VmPolicyConfig(
+                activityLeaks = true,
+                cleartextNetwork = true,
+                contentUriWithoutPermission = true,
+                fileUriExposure = true,
+                leakedClosableObjects = true,
+                leakedSqlLiteObjects = true,
+                leakedRegistrationObjects = true,
+                nonSdkApiUsage = true,
+                untaggedSockets = true,
+                implicitDirectBoot = true,
+                credentialProtectedWhileLocked = true,
+                penaltyConfig = PenaltyConfig(false)
+            )
+        }
+
         private const val DEFAULT_ACTIVITY_LEAKS = true
         private const val DEFAULT_CLEARTEXT_NETWORK = true
         private const val DEFAULT_CONTENT_URI_WITHOUT_PERMISSION = true
@@ -91,7 +115,7 @@ class VmPolicyConfig private constructor(
         var log: Boolean
     ) {
 
-        internal var onViolation: ((violation: Violation) -> Unit)? = null
+        internal var onViolation: StrictModeCompat.OnVmViolationListener? = null
         internal var onViolationExecutor: Executor? = null
 
         /**
@@ -99,7 +123,7 @@ class VmPolicyConfig private constructor(
          *
          * Work on [Build.VERSION_CODES.P] and newer.
          */
-        fun onViolation(executor: Executor, body: (violation: Violation) -> Unit) {
+        fun onViolation(executor: Executor, body: StrictModeCompat.OnVmViolationListener) {
             onViolationExecutor = executor
             this.onViolation = body
         }
@@ -137,4 +161,41 @@ class VmPolicyConfig private constructor(
             private const val DEFAULT_LOG = true
         }
     }
+}
+
+@PublishedApi
+internal fun buildVmPolicy(config: VmPolicyConfig): StrictMode.VmPolicy {
+    return StrictModeCompat.VmPolicy.Builder().apply {
+        with(config) {
+            if (activityLeaks) detectActivityLeaks()
+            if (cleartextNetwork) detectCleartextNetwork()
+            if (contentUriWithoutPermission) detectContentUriWithoutPermission()
+            if (fileUriExposure) detectFileUriExposure()
+            if (leakedClosableObjects) detectLeakedClosableObjects()
+            if (leakedRegistrationObjects) detectLeakedRegistrationObjects()
+            if (leakedSqlLiteObjects) detectLeakedSqlLiteObjects()
+            if (nonSdkApiUsage) detectNonSdkApiUsage()
+            if (untaggedSockets) detectUntaggedSockets()
+            if (credentialProtectedWhileLocked) detectCredentialProtectedWhileLocked()
+            if (implicitDirectBoot) detectImplicitDirectBoot()
+
+            classesInstanceLimit.takeIf { it.isNotEmpty() }?.apply {
+                toMap().forEach { (clazz, limit) ->
+                    setClassInstanceLimit(clazz.java, limit)
+                }
+            }
+        }
+
+        with(config.penaltyConfig) {
+            if (death) penaltyDeath()
+            if (deathOnCleartextNetwork) penaltyDeathOnCleartextNetwork()
+            if (deathOnFileUriExposure) penaltyDeathOnFileUriExposure()
+            if (dropBox) penaltyDropBox()
+            if (log) penaltyLog()
+
+            onViolation?.let { onViolation ->
+                penaltyListener(checkNotNull(onViolationExecutor), onViolation)
+            }
+        }
+    }.build()
 }

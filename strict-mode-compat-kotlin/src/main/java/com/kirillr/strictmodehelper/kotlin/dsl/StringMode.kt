@@ -17,82 +17,40 @@
 package com.kirillr.strictmodehelper.kotlin.dsl
 
 import android.os.StrictMode
-import com.kirillr.strictmodehelper.StrictModeCompat
 
 @Suppress("unused")
-fun initStrictMode(
+inline fun initStrictMode(
     enable: Boolean = true,
-    enableDefaults: Boolean = true,
+    enableDefaults: Boolean,
     config: (StrictModeConfig.() -> Unit)
 ) {
-    if (!enable) return
-
-    with(StrictModeConfig(enableDefaults).apply(config)) {
-        threadPolicyConfig?.let(::buildThreadPolicy).let(StrictMode::setThreadPolicy)
-        vmPolicyConfig?.let(::buildVmPolicy).let(StrictMode::setVmPolicy)
+    initStrictMode(enable, config) {
+        StrictModeConfig(enableDefaults)
     }
 }
 
-private fun buildThreadPolicy(config: ThreadPolicyConfig): StrictMode.ThreadPolicy {
-    return StrictModeCompat.ThreadPolicy.Builder().apply {
-        with(config) {
-            if (customSlowCalls) detectCustomSlowCalls()
-            if (diskReads) detectDiskReads()
-            if (diskWrites) detectDiskWrites()
-            if (network) detectNetwork()
-            if (resourceMismatches) detectResourceMismatches()
-            if (unbufferedIo) detectUnbufferedIo()
-        }
-
-        with(config.penaltyConfig) {
-            if (death) penaltyDeath()
-            if (deathOnNetwork) penaltyDeathOnNetwork()
-            if (dialog) penaltyDialog()
-            if (dropBox) penaltyDropBox()
-            if (flashScreen) penaltyFlashScreen()
-            if (log) penaltyLog()
-
-            onViolation?.let { onViolation ->
-                penaltyListener(checkNotNull(onViolationExecutor), onViolation)
-            }
-        }
-    }.build()
+@Suppress("unused")
+inline fun initStrictMode(
+    enable: Boolean = true,
+    defaultsThreadPolicy: StrictModeConfig.Defaults = StrictModeConfig.Defaults.DEFAULT,
+    defaultsVmPolicy: StrictModeConfig.Defaults = StrictModeConfig.Defaults.DEFAULT,
+    config: (StrictModeConfig.() -> Unit)
+) {
+    initStrictMode(enable, config) {
+        StrictModeConfig(defaultsThreadPolicy, defaultsVmPolicy)
+    }
 }
 
-private fun buildVmPolicy(config: VmPolicyConfig): StrictMode.VmPolicy {
-    return StrictModeCompat.VmPolicy.Builder().apply {
-        with(config) {
-            if (activityLeaks) detectActivityLeaks()
-            if (cleartextNetwork) detectCleartextNetwork()
-            if (contentUriWithoutPermission) detectContentUriWithoutPermission()
-            if (fileUriExposure) detectFileUriExposure()
-            if (leakedClosableObjects) detectLeakedClosableObjects()
-            if (leakedRegistrationObjects) detectLeakedRegistrationObjects()
-            if (leakedSqlLiteObjects) detectLeakedSqlLiteObjects()
-            if (nonSdkApiUsage) detectNonSdkApiUsage()
-            if (untaggedSockets) detectUntaggedSockets()
-            if (credentialProtectedWhileLocked) detectCredentialProtectedWhileLocked()
-            if (implicitDirectBoot) detectImplicitDirectBoot()
+@PublishedApi
+internal inline fun initStrictMode(
+    enable: Boolean,
+    config: (StrictModeConfig.() -> Unit),
+    createStrictModeConfig: () -> StrictModeConfig,
+) {
+    if (!enable) return
 
-            classesInstanceLimit.apply {
-                if (isNotEmpty()) {
-                    toMap().forEach { (clazz, limit) ->
-                        setClassInstanceLimit(clazz.java, limit)
-                    }
-                }
-            }
-        }
-
-        with(config.penaltyConfig) {
-            if (death) penaltyDeath()
-            if (deathOnCleartextNetwork) penaltyDeathOnCleartextNetwork()
-            if (deathOnFileUriExposure) penaltyDeathOnFileUriExposure()
-            if (dropBox) penaltyDropBox()
-            if (log) penaltyLog()
-
-            onViolation?.let { onViolation ->
-                penaltyListener(checkNotNull(onViolationExecutor), onViolation)
-            }
-        }
-    }.build()
+    with(createStrictModeConfig().apply(config)) {
+        StrictMode.setThreadPolicy(buildThreadPolicy(threadPolicyConfig))
+        StrictMode.setVmPolicy(buildVmPolicy(vmPolicyConfig))
+    }
 }

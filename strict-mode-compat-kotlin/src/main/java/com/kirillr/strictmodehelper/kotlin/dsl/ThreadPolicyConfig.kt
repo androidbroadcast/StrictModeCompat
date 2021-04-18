@@ -18,11 +18,11 @@
 
 package com.kirillr.strictmodehelper.kotlin.dsl
 
-import android.os.strictmode.Violation
-import java.util.concurrent.Executor
+import android.os.Build
 import android.os.DropBoxManager
 import android.os.StrictMode
-import android.os.Build
+import com.kirillr.strictmodehelper.StrictModeCompat
+import java.util.concurrent.Executor
 
 @ThreadPolicyDsl
 class ThreadPolicyConfig private constructor(
@@ -65,8 +65,12 @@ class ThreadPolicyConfig private constructor(
 
     internal companion object {
 
-        internal operator fun invoke(enableDefaults: Boolean): ThreadPolicyConfig {
-            return if (enableDefaults) default() else disableAll()
+        internal operator fun invoke(defaults: StrictModeConfig.Defaults): ThreadPolicyConfig {
+            return when(defaults) {
+                StrictModeConfig.Defaults.DEFAULT -> default()
+                StrictModeConfig.Defaults.ALL -> enableAll()
+                StrictModeConfig.Defaults.NONE -> disableAll()
+            }
         }
 
         private fun disableAll(): ThreadPolicyConfig {
@@ -89,6 +93,18 @@ class ThreadPolicyConfig private constructor(
                 network = DEFAULT_NETWORK,
                 resourceMismatches = DEFAULT_RESOURCE_MISMATCHES,
                 unbufferedIo = DEFAULT_UNBUFFERED_IO,
+                penaltyConfig = PenaltyConfig(true)
+            )
+        }
+
+        private fun enableAll(): ThreadPolicyConfig {
+            return ThreadPolicyConfig(
+                customSlowCalls = true,
+                diskReads = true,
+                diskWrites = true,
+                network = true,
+                resourceMismatches = true,
+                unbufferedIo = true,
                 penaltyConfig = PenaltyConfig(true)
             )
         }
@@ -139,7 +155,7 @@ class ThreadPolicyConfig private constructor(
         var log: Boolean
     ) {
 
-        internal var onViolation: ((violation: Violation) -> Unit)? = null
+        internal var onViolation: StrictModeCompat.OnThreadViolationListener? = null
         internal var onViolationExecutor: Executor? = null
 
         /**
@@ -147,7 +163,7 @@ class ThreadPolicyConfig private constructor(
          *
          * Work on [Build.VERSION_CODES.P] and newer.
          */
-        fun onViolation(executor: Executor, body: (violation: Violation) -> Unit) {
+        fun onViolation(executor: Executor, body: StrictModeCompat.OnThreadViolationListener) {
             onViolationExecutor = executor
             this.onViolation = body
         }
@@ -188,4 +204,31 @@ class ThreadPolicyConfig private constructor(
             private const val DEFAULT_LOG = true
         }
     }
+}
+
+@PublishedApi
+internal fun buildThreadPolicy(config: ThreadPolicyConfig): StrictMode.ThreadPolicy {
+    return StrictModeCompat.ThreadPolicy.Builder().apply {
+        with(config) {
+            if (customSlowCalls) detectCustomSlowCalls()
+            if (diskReads) detectDiskReads()
+            if (diskWrites) detectDiskWrites()
+            if (network) detectNetwork()
+            if (resourceMismatches) detectResourceMismatches()
+            if (unbufferedIo) detectUnbufferedIo()
+        }
+
+        with(config.penaltyConfig) {
+            if (death) penaltyDeath()
+            if (deathOnNetwork) penaltyDeathOnNetwork()
+            if (dialog) penaltyDialog()
+            if (dropBox) penaltyDropBox()
+            if (flashScreen) penaltyFlashScreen()
+            if (log) penaltyLog()
+
+            onViolation?.let { onViolation ->
+                penaltyListener(checkNotNull(onViolationExecutor), onViolation)
+            }
+        }
+    }.build()
 }

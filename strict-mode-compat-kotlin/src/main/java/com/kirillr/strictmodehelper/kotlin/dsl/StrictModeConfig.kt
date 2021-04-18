@@ -17,23 +17,31 @@
 package com.kirillr.strictmodehelper.kotlin.dsl
 
 @StrictModeDsl
-class StrictModeConfig internal constructor(private val enableDefaults: Boolean) {
+class StrictModeConfig @PublishedApi internal constructor(
+    defaultsThreadPolicy: Defaults = Defaults.DEFAULT,
+    defaultsVmPolicy: Defaults = Defaults.DEFAULT
+) {
 
-    internal var threadPolicyConfig: ThreadPolicyConfig? = null
-    internal var vmPolicyConfig: VmPolicyConfig? = null
+    constructor(enableDefaults: Boolean) : this(
+        if (enableDefaults) Defaults.DEFAULT else Defaults.NONE,
+        if (enableDefaults) Defaults.DEFAULT else Defaults.NONE,
+    )
 
-    init {
-        if (enableDefaults) {
-            threadPolicyConfig = ThreadPolicyConfig(true)
-            vmPolicyConfig = VmPolicyConfig(true)
-        }
-    }
+    @PublishedApi
+    internal val threadPolicyConfig = ThreadPolicyConfig(defaultsThreadPolicy)
+
+    @PublishedApi
+    internal val vmPolicyConfig = VmPolicyConfig(defaultsVmPolicy)
 
     fun threadPolicy(config: @StrictModeDsl ThreadPolicyConfig.() -> Unit) {
-        threadPolicyConfig = (threadPolicyConfig ?: ThreadPolicyConfig(enableDefaults)).apply(config)
+        threadPolicyConfig.apply(config)
     }
 
     fun vmPolicy(config: @StrictModeDsl VmPolicyConfig.() -> Unit) {
-        vmPolicyConfig = (vmPolicyConfig ?: VmPolicyConfig(enableDefaults)).apply(config)
+        vmPolicyConfig.apply(config)
+    }
+
+    enum class Defaults {
+        NONE, DEFAULT, ALL
     }
 }
