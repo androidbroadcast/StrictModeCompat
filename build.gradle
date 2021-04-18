@@ -21,7 +21,7 @@ plugins {
 
 ext {
     androidXAnnotationsVersion = '1.1.0'
-    androidXAppCompatVersion = '1.0.2'
+    androidXAppCompatVersion = '1.2.0'
 
     minSdkVersion = 14
     compileSdkVersion = 30
