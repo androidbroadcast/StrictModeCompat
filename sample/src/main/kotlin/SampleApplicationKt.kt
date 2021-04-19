@@ -17,6 +17,7 @@
 import android.annotation.SuppressLint
 import android.app.Application
 import com.kirillr.application.BuildConfig
+import com.kirillr.strictmodehelper.kotlin.dsl.StrictModeConfig
 import com.kirillr.strictmodehelper.kotlin.dsl.initStrictMode
 
 @SuppressLint("Registered")
@@ -24,7 +25,11 @@ class SampleApplicationKt : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        initStrictMode(enable = BuildConfig.DEVELOPER_MODE, enableDefaults = false) {
+        initStrictMode(
+            enable = BuildConfig.DEVELOPER_MODE,
+            defaultsThreadPolicy = StrictModeConfig.Defaults.DEFAULT,
+            defaultsVmPolicy = StrictModeConfig.Defaults.DEFAULT,
+        ) {
             threadPolicy {
                 resourceMismatches = true
                 customSlowCalls = true
