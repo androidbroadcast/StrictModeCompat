@@ -1,5 +1,5 @@
 [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-Android%20StrictMode%20Compat-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/5655)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.kirich1409/strict-mode-compat/badge.svg)](https://maven-badges.herokuapp.com/maven-central//com.github.kirich1409/strict-mode-compat)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.kirich1409/strict-mode-compat/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.kirich1409/strict-mode-compat)
 
 Android StrictMode Compat
 =========================
