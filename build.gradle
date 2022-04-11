@@ -24,13 +24,13 @@ ext {
     androidXAppCompatVersion = '1.4.1'
 
     minSdkVersion = 14
-    compileSdkVersion = 32
+    compileSdkVersion = 31
     targetSdkVersion = 31
     buildToolsVersion = "32.0.0"
 
     androidJar = androidjar.find(compileSdkVersion)
 
-    strictModeCompatVersionName = '30.2.0'
+    strictModeCompatVersionName = '31.0.0'
     versionName = strictModeCompatVersionName
     strictModeCompatKotlinVersionName = strictModeCompatVersionName
 }

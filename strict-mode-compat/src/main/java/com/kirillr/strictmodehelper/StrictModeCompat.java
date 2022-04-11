@@ -740,7 +740,10 @@ public final class StrictModeCompat {
             private final BuilderImpl mBuilder;
 
             public Builder() {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    mBuilder = new V31BuilderImpl();
+
+                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                     mBuilder = new V29BuilderImpl();
 
                 } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
@@ -767,7 +770,10 @@ public final class StrictModeCompat {
             }
 
             public Builder(@NonNull StrictMode.VmPolicy policy) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    mBuilder = new V31BuilderImpl(policy);
+
+                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                     mBuilder = new V29BuilderImpl(policy);
 
                 } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
@@ -793,6 +799,7 @@ public final class StrictModeCompat {
                 }
             }
 
+            @NonNull
             public StrictMode.VmPolicy build() {
                 return mBuilder.build();
             }
@@ -800,6 +807,7 @@ public final class StrictModeCompat {
             /**
              * Detect leaks of {@link Activity} subclasses.
              */
+            @NonNull
             public Builder detectActivityLeaks() {
                 mBuilder.detectActivityLeaks();
                 return this;
@@ -812,6 +820,7 @@ public final class StrictModeCompat {
              * SQLite cursors, Activities, and other closable objects
              * but will likely expand in future releases.
              */
+            @NonNull
             public Builder detectAll() {
                 mBuilder.detectAll();
                 return this;
@@ -834,6 +843,7 @@ public final class StrictModeCompat {
              * may be subject to false positives, such as when STARTTLS
              * protocols or HTTP proxies are used.
              */
+            @NonNull
             public Builder detectCleartextNetwork() {
                 mBuilder.detectCleartextNetwork();
                 return this;
@@ -857,6 +867,7 @@ public final class StrictModeCompat {
              * @see Intent#FLAG_GRANT_READ_URI_PERMISSION
              */
             @SuppressWarnings("JavadocReference")
+            @NonNull
             public Builder detectFileUriExposure() {
                 mBuilder.detectFileUriExposure();
                 return this;
@@ -870,6 +881,7 @@ public final class StrictModeCompat {
              * <p>You always want to explicitly close such objects to
              * avoid unnecessary resources leaks.
              */
+            @NonNull
             public Builder detectLeakedClosableObjects() {
                 mBuilder.detectLeakedClosableObjects();
                 return this;
@@ -880,6 +892,7 @@ public final class StrictModeCompat {
              * {@link ServiceConnection} is leaked during {@link Context}
              * teardown.
              */
+            @NonNull
             public Builder detectLeakedRegistrationObjects() {
                 mBuilder.detectLeakedRegistrationObjects();
                 return this;
@@ -894,6 +907,7 @@ public final class StrictModeCompat {
              * cursors to avoid unnecessary database contention and
              * temporary memory leaks.
              */
+            @NonNull
             public Builder detectLeakedSqlLiteObjects() {
                 mBuilder.detectLeakedSqlLiteObjects();
                 return this;
@@ -904,6 +918,7 @@ public final class StrictModeCompat {
              * end of all enabled penalties so you'll still get your logging or
              * other violations before the process dies.
              */
+            @NonNull
             public Builder penaltyDeath() {
                 mBuilder.penaltyDeath();
                 return this;
@@ -915,6 +930,7 @@ public final class StrictModeCompat {
              *
              * @see #detectCleartextNetwork()
              */
+            @NonNull
             public Builder penaltyDeathOnCleartextNetwork() {
                 mBuilder.penaltyDeathOnCleartextNetwork();
                 return this;
@@ -926,6 +942,7 @@ public final class StrictModeCompat {
              *
              * @see #detectFileUriExposure()
              */
+            @NonNull
             public Builder penaltyDeathOnFileUriExposure() {
                 mBuilder.penaltyDeathOnFileUriExposure();
                 return this;
@@ -937,6 +954,7 @@ public final class StrictModeCompat {
              * violation.  Intended mostly for platform integrators doing
              * beta user field data collection.
              */
+            @NonNull
             public Builder penaltyDropBox() {
                 mBuilder.penaltyDropBox();
                 return this;
@@ -945,6 +963,7 @@ public final class StrictModeCompat {
             /**
              * Log detected violations to the system log.
              */
+            @NonNull
             public Builder penaltyLog() {
                 mBuilder.penaltyLog();
                 return this;
@@ -957,6 +976,7 @@ public final class StrictModeCompat {
              * @param klass         Class for what apply instances limit
              * @param instanceLimit Max instances count
              */
+            @NonNull
             public Builder setClassInstanceLimit(@NonNull Class<?> klass,
                                                  @IntRange(from = 0) int instanceLimit) {
                 mBuilder.setClassInstanceLimit(klass, instanceLimit);
@@ -970,6 +990,7 @@ public final class StrictModeCompat {
              * Forgetting to include one or more of these flags
              * when sending an intent is typically an app bug.
              */
+            @NonNull
             public Builder detectContentUriWithoutPermission() {
                 mBuilder.detectContentUriWithoutPermission();
                 return this;
@@ -982,6 +1003,7 @@ public final class StrictModeCompat {
              * such as a narrowing down heavy usage to a specific library or component.
              * <p>This currently does not detect sockets created in native code.
              */
+            @NonNull
             public Builder detectUntaggedSockets() {
                 mBuilder.detectUntaggedSockets();
                 return this;
@@ -993,6 +1015,7 @@ public final class StrictModeCompat {
              * Note that any non-SDK APIs that this processes accesses before this detection is enabled may not be detected.
              * To ensure that all such API accesses are detected, you should apply this policy as early as possible after process creation.
              */
+            @NonNull
             public Builder detectNonSdkApiUsage() {
                 mBuilder.detectNonSdkApiUsage();
                 return this;
@@ -1004,6 +1027,7 @@ public final class StrictModeCompat {
              * @param executor This value must never be null.
              * @param listener This value must never be null.
              */
+            @NonNull
             public Builder penaltyListener(@NonNull Executor executor,
                                            @NonNull OnVmViolationListener listener) {
                 mBuilder.penaltyListener(executor, listener);
@@ -1016,6 +1040,7 @@ public final class StrictModeCompat {
              * Note that this only affects StrictMode, the underlying runtime may continue
              * to restrict or warn on access to methods that are not part of the public SDK.
              */
+            @NonNull
             public Builder permitNonSdkApiUsage() {
                 mBuilder.permitNonSdkApiUsage();
                 return this;
@@ -1035,6 +1060,7 @@ public final class StrictModeCompat {
              *  <li>PackageManager#MATCH_DIRECT_BOOT_AUTO</li>
              * </ul>
              */
+            @NonNull
             public Builder detectImplicitDirectBoot() {
                 mBuilder.detectImplicitDirectBoot();
                 return this;
@@ -1050,8 +1076,84 @@ public final class StrictModeCompat {
              * Instead, apps should store data needed while a user is locked
              * under device protected storage areas.
              */
+            @NonNull
             public Builder detectCredentialProtectedWhileLocked() {
                 mBuilder.detectCredentialProtectedWhileLocked();
+                return this;
+            }
+
+            /**
+             * Detect attempts to invoke a method on a {@link Context} that is not suited for such
+             * operation.
+             *
+             * <p>An example of this is trying to obtain an instance of UI service (e.g.
+             * {@link android.view.WindowManager}) from a non-visual {@link Context}. This is not
+             * allowed, since a non-visual {@link Context} is not adjusted to any visual area, and
+             * therefore can report incorrect metrics or resources.
+             *
+             * @see Context#getDisplay()
+             * @see Context#getSystemService(String)
+             */
+            @NonNull
+            public Builder detectIncorrectContextUse() {
+                mBuilder.detectIncorrectContextUse();
+                return this;
+            }
+
+            /**
+             * Detect when your app launches an {@link Intent} which originated
+             * from outside your app.
+             * <p>
+             * Violations may indicate security vulnerabilities in the design of
+             * your app, where a malicious app could trick you into granting
+             * {@link Uri} permissions or launching unexported components. Here
+             * are some typical design patterns that can be used to safely
+             * resolve these violations:
+             * <ul>
+             * <li>The ideal approach is to migrate to using a
+             * {@link android.app.PendingIntent}, which ensures that your launch is
+             * performed using the identity of the original creator, completely
+             * avoiding the security issues described above.
+             * <li>If using a {@link android.app.PendingIntent} isn't feasible, an
+             * alternative approach is to create a brand new {@link Intent} and
+             * carefully copy only specific values from the original
+             * {@link Intent} after careful validation.
+             * </ul>
+             * <p>
+             * Note that this <em>may</em> detect false-positives if your app
+             * sends itself an {@link Intent} which is first routed through the
+             * OS, such as using {@link Intent#createChooser}. In these cases,
+             * careful inspection is required to determine if the return point
+             * into your app is appropriately protected with a signature
+             * permission or marked as unexported. If the return point is not
+             * protected, your app is likely vulnerable to malicious apps.
+             *
+             * @see Context#startActivity(Intent)
+             * @see Context#startService(Intent)
+             * @see Context#bindService(Intent, ServiceConnection, int)
+             * @see Context#sendBroadcast(Intent)
+             * @see android.app.Activity#setResult(int, Intent)
+             */
+            @NonNull
+            public Builder detectUnsafeIntentLaunch() {
+                mBuilder.detectUnsafeIntentLaunch();
+                return this;
+            }
+
+            /**
+             * Permit your app to launch any {@link Intent} which originated
+             * from outside your app.
+             * <p>
+             * Disabling this check is <em>strongly discouraged</em>, as
+             * violations may indicate security vulnerabilities in the design of
+             * your app, where a malicious app could trick you into granting
+             * {@link Uri} permissions or launching unexported components.
+             *
+             * @see #detectUnsafeIntentLaunch()
+             */
+            @NonNull
+            public Builder permitUnsafeIntentLaunch() {
+                mBuilder.permitUnsafeIntentLaunch();
                 return this;
             }
         }
@@ -1060,6 +1162,7 @@ public final class StrictModeCompat {
 
             String CATEGORY = "VmPolicy";
 
+            @NonNull
             StrictMode.VmPolicy build();
 
             void detectActivityLeaks();
@@ -1113,6 +1216,15 @@ public final class StrictModeCompat {
 
             // Min SDK 29
             void detectCredentialProtectedWhileLocked();
+
+            // Min SDK 31
+            void detectIncorrectContextUse();
+
+            // Min SDK 31
+            void detectUnsafeIntentLaunch();
+
+            // Min SDK 31
+            void permitUnsafeIntentLaunch();
         }
 
         private static class V14BuilderImpl implements BuilderImpl {
@@ -1232,6 +1344,21 @@ public final class StrictModeCompat {
             @Override
             public void detectCredentialProtectedWhileLocked() {
                 Utils.logUnsupportedFeature(CATEGORY, "Credential Protected While Locked");
+            }
+
+            @Override
+            public void detectIncorrectContextUse() {
+                Utils.logUnsupportedFeature(CATEGORY, "Incorrect Context Use");
+            }
+
+            @Override
+            public void detectUnsafeIntentLaunch() {
+                Utils.logUnsupportedFeature(CATEGORY, "Unsafe Intent Launch");
+            }
+
+            @Override
+            public void permitUnsafeIntentLaunch() {
+                Utils.logUnsupportedFeature(CATEGORY, "Unsafe Intent Launch");
             }
         }
 
@@ -1381,6 +1508,32 @@ public final class StrictModeCompat {
             @Override
             public void detectCredentialProtectedWhileLocked() {
                 mBuilder.detectCredentialProtectedWhileLocked();
+            }
+        }
+
+        @TargetApi(Build.VERSION_CODES.S)
+        private static class V31BuilderImpl extends V26BuilderImpl {
+
+            V31BuilderImpl() {
+            }
+
+            V31BuilderImpl(@NonNull StrictMode.VmPolicy policy) {
+                super(policy);
+            }
+
+            @Override
+            public void detectIncorrectContextUse() {
+                mBuilder.detectIncorrectContextUse();
+            }
+
+            @Override
+            public void detectUnsafeIntentLaunch() {
+                mBuilder.detectUnsafeIntentLaunch();
+            }
+
+            @Override
+            public void permitUnsafeIntentLaunch() {
+                mBuilder.permitUnsafeIntentLaunch();
             }
         }
     }

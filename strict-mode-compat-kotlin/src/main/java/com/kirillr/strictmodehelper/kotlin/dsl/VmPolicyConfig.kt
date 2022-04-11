@@ -24,7 +24,9 @@ class VmPolicyConfig private constructor(
     var untaggedSockets: Boolean,
     var implicitDirectBoot: Boolean,
     var credentialProtectedWhileLocked: Boolean,
-    internal val penaltyConfig: PenaltyConfig
+    var incorrectContextUse: Boolean,
+    var unsafeIntentLaunch: Boolean,
+    internal val penaltyConfig: PenaltyConfig,
 ) {
 
     var classesInstanceLimit: Map<KClass<*>, Int> = emptyMap()
@@ -56,6 +58,8 @@ class VmPolicyConfig private constructor(
                 untaggedSockets = false,
                 implicitDirectBoot = false,
                 credentialProtectedWhileLocked = false,
+                incorrectContextUse = false,
+                unsafeIntentLaunch = false,
                 penaltyConfig = PenaltyConfig(false)
             )
         }
@@ -73,6 +77,8 @@ class VmPolicyConfig private constructor(
                 untaggedSockets = DEFAULT_UNTAGGED_SOCKETS,
                 implicitDirectBoot = DEFAULT_IMPLICIT_DIRECT_BOOT,
                 credentialProtectedWhileLocked = DEFAULT_CREDENTIAL_PROTECTED_WHILE_LOCKED,
+                incorrectContextUse = DEFAULT_INCORRECT_CONTEXT_USE,
+                unsafeIntentLaunch = DEFAULT_UNSAFE_INTENT_LAUNCH,
                 penaltyConfig = PenaltyConfig(true)
             )
         }
@@ -90,6 +96,8 @@ class VmPolicyConfig private constructor(
                 untaggedSockets = true,
                 implicitDirectBoot = true,
                 credentialProtectedWhileLocked = true,
+                incorrectContextUse = true,
+                unsafeIntentLaunch = true,
                 penaltyConfig = PenaltyConfig(false)
             )
         }
@@ -105,6 +113,8 @@ class VmPolicyConfig private constructor(
         private const val DEFAULT_UNTAGGED_SOCKETS = true
         private const val DEFAULT_IMPLICIT_DIRECT_BOOT = true
         private const val DEFAULT_CREDENTIAL_PROTECTED_WHILE_LOCKED = true
+        private const val DEFAULT_INCORRECT_CONTEXT_USE = true
+        private const val DEFAULT_UNSAFE_INTENT_LAUNCH = true
     }
 
     class PenaltyConfig private constructor(
@@ -178,6 +188,8 @@ internal fun buildVmPolicy(config: VmPolicyConfig): StrictMode.VmPolicy {
             if (untaggedSockets) detectUntaggedSockets()
             if (credentialProtectedWhileLocked) detectCredentialProtectedWhileLocked()
             if (implicitDirectBoot) detectImplicitDirectBoot()
+            if (unsafeIntentLaunch) detectUnsafeIntentLaunch()
+            if (incorrectContextUse) detectIncorrectContextUse()
 
             classesInstanceLimit.takeIf { it.isNotEmpty() }?.apply {
                 toMap().forEach { (clazz, limit) ->
