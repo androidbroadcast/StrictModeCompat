@@ -1,7 +1,7 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-    ext.kotlin_version = '1.4.32'
+    ext.kotlin_version = '1.6.20'
 
     repositories {
         google()
@@ -9,7 +9,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.2.0-rc01'
+        classpath 'com.android.tools.build:gradle:7.2.0-beta04'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
@@ -21,12 +21,12 @@ plugins {
 
 ext {
     androidXAnnotationsVersion = '1.1.0'
-    androidXAppCompatVersion = '1.2.0'
+    androidXAppCompatVersion = '1.4.1'
 
     minSdkVersion = 14
-    compileSdkVersion = 30
-    targetSdkVersion = 29
-    buildToolsVersion = "30.0.3"
+    compileSdkVersion = 32
+    targetSdkVersion = 31
+    buildToolsVersion = "32.0.0"
 
     androidJar = androidjar.find(compileSdkVersion)
 

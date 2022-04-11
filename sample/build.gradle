@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+}
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -25,28 +27,17 @@ android {
         applicationId "com.kirillr.application"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        buildConfigField 'boolean', 'DEVELOPER_MODE', 'false'
     }
 
     buildTypes {
         debug {
             buildConfigField 'boolean', 'DEVELOPER_MODE', 'true'
         }
-
-        release {
-            buildConfigField 'boolean', 'DEVELOPER_MODE', 'false'
-        }
     }
-
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-
-    sourceSets.main.java.srcDirs += 'src/main/kotlin'
 
     buildFeatures {
         buildConfig true
@@ -56,4 +47,5 @@ android {
 dependencies {
     implementation "androidx.appcompat:appcompat:$androidXAppCompatVersion"
     implementation project(':strict-mode-compat-kotlin')
+    implementation "org.jetbrains.kotlin:kotlin-stdlib"
 }
