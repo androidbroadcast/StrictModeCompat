@@ -1,4 +1,4 @@
-/*
+package com.kirillr.application/*
  * Copyright 2017-2021 Kirill Rozov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
